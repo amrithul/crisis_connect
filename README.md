@@ -5,7 +5,7 @@ Crisis-Connect is a **machine learning-based disaster prediction system** design
 
 ## 🚀 Features
 - **Real-time Monitoring & Alerts** – Stay informed with early warnings.
-- **AI-Based Predictions** – Uses **Convolutional Neural Networks (CNNs)** for accurate forecasting.
+- **AI-Based Predictions** – Uses **(LSTM)** for accurate forecasting.
 - **Emergency Shelter Database** – Locate safe havens quickly.
 - **Resource Availability Updates** – Find food, water, and medical aid easily.
 - **Donation & Relief Coordination** – Streamline aid distribution.
