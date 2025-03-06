@@ -11,18 +11,6 @@ Crisis-Connect is a **machine learning-based disaster prediction system** design
 - **Donation & Relief Coordination** – Streamline aid distribution.
 - **User-friendly Interface** – Access visualization tools and essential disaster response information.
 
-## 🏗️ Project Structure
-```
-Crisis-Connect/
-│── data/                # Dataset for training and testing
-│── models/              # Trained machine learning models
-│── src/                 # Source code for data processing & prediction
-│── frontend/            # User interface and visualization
-│── docs/                # Project documentation
-│── README.md            # Project overview
-│── requirements.txt     # Dependencies and installations
-│── main.py              # Entry point for execution
-```
 
 ## ⚙️ Installation & Setup
 ### Prerequisites
@@ -56,10 +44,10 @@ npm start
 - **Database:** Firebase / PostgreSQL
 
 ## 🏆 Team Members
-👨‍💻 **Joel Jiju Varghese** – U2104033  
-👩‍💻 **Lakshmi** – U2104037  
-👨‍💻 **Rithul R** – U2104056  
-👩‍💻 **Sharon Puthen Purayil** – U2104064  
+👨‍💻 **Joel Jiju Varghese**
+👩‍💻 **Lakshmi**
+👨‍💻 **Rithul R**
+👩‍💻 **Sharon Puthen Purayil**
 
 ## 📜 License
 This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
