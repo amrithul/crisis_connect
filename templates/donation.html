@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Crisis Connect</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="" name="keywords" />
+    <meta content="" name="description" />
+
+    <!-- Favicons -->
+    <link
+      href="{{ url_for('static', filename='img/favicon-2.png') }}"
+      rel="icon"
+    />
+    <link href="img/apple-touch-icon.png" rel="apple-touch-icon" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,500,600,700,700i|Montserrat:300,400,500,600,700"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap CSS File -->
+    <link
+      href="{{ url_for('static', filename='lib/bootstrap/css/bootstrap.min.css') }}"
+      rel="stylesheet"
+    />
+
+    <!-- Libraries CSS Files -->
+    <link
+      href="{{ url_for('static', filename='lib/font-awesome/css/font-awesome.min.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='lib/animate/animate.min.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='lib/ionicons/css/ionicons.min.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='lib/lightbox/css/lightbox.min.css') }}"
+      rel="stylesheet"
+    />
+    <!-- Main Stylesheet File -->
+    <link
+      href="{{ url_for('static', filename='css/style.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!--==========================
+  Navigation Bar
+  ============================-->
+    <header id="header">
+      <div id="topbar">
+        <div class="container">
+          <div class="social-links">
+            <!-- <a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
+            <a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
+            <a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a>
+            <a href="#" class="instagram"><i class="fa fa-instagram"></i></a> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="logo float-left">
+           <h1 class="text-light">
+            <a href="#intro" class="scrollto"><span>Crisis Connect</span></a>
+          </h1>
+          <!--
+          <a href="#header" class="scrollto"
+            ><img
+              style="margin-top: -5px; min-height: 50px;"
+              src="{{ url_for('static', filename='img/logo.png') }}"
+              alt=""
+              class="img-fluid"
+          /></a>
+          -->
+        </div>
+
+        <nav class="main-nav float-right d-none d-lg-block">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="heatmaps.html">Heatmaps</a></li>
+            <li><a href="satellite.html">Satellite</a></li>
+            <li><a href="predicts.html">Predict</a></li>
+            <li><a href="donation.html">Donation</a></li>
+          </ul>
+        </nav>
+        <!-- .main-nav -->
+      </div>
+    </header>
+
+    <!-- Header Section Below Navigation Bar -->
+    <header class="bg text-white text-center py-5" style="margin-top: 80px; background-color: #1bb1dc;">
+        <div class="container">
+            <h1 class="display-4">Rebuilding Lives, Restoring Hope</h1> <!-- Updated Header Text -->
+            <p class="lead">Your support helps communities recover and rebuild after disasters.</p>
+            <a href="#request-help" class="btn btn-light btn-lg">Request Help</a>
+            <a href="#donate-now" class="btn btn-outline-light btn-lg">Donate Now</a>
+        </div>
+    </header>
+    
+
+    <!-- Request Help Section -->
+    <section id="request-help" class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Request Help</h2>
+            <p class="text-center mb-4">If you or your community are in need of assistance, please submit your request below.</p>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form action="/submit_request" method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Your Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" name="location" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="help_type" class="form-label">Type of Help Needed</label>
+                            <select class="form-select" id="help_type" name="help_type" required>
+                                <option value="food">Food</option>
+                                <option value="shelter">Shelter</option>
+                                <option value="medical">Medical Aid</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" style="background-color: #1bb1dc;">Submit Request</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Donate Now Section -->
+    <section id="donate-now" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Donate Now</h2>
+            <p class="text-center mb-4">Your support can make a difference. Please consider donating to help those in need.</p>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form action="/donate" method="POST">
+                        <div class="mb-3">
+                            <label for="donor_name" class="form-label">Your Name</label>
+                            <input type="text" class="form-control" id="donor_name" name="donor_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="donation_type" class="form-label">Type of Donation</label>
+                            <select class="form-select" id="donation_type" name="donation_type" required>
+                                <option value="money">Money</option>
+                                <option value="food">Food</option>
+                                <option value="clothes">Clothes</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Donate Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Current Requests Section -->
+<section id="current-requests" class="bg-light py-5">
+  <div class="container">
+      <h2 class="text-center mb-4">Current Requests</h2>
+      <div class="table-responsive">
+          <table class="table table-striped">
+              <thead>
+                  <tr>
+                      <th>Name</th>
+                      <th>Location</th>
+                      <th>Help Needed</th>
+                      <th>Status</th>
+                      <th>Action</th> <!-- New Column for Donate Button -->
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for request in requests %}
+                  <tr>
+                      <td>{{ request.name }}</td>
+                      <td>{{ request.location }}</td>
+                      <td>{{ request.help_type }}</td>
+                      <td id="status-{{ request.id }}">{{ request.status }}</td>
+                      <td>
+                          <button class="btn btn-success donate-btn"
+                              data-bs-toggle="modal"
+                              data-bs-target="#donateModal"
+                              data-request-id="{{ request.id }}"
+                              data-name="{{ request.name }}"
+                              data-location="{{ request.location }}"
+                              data-help-type="{{ request.help_type }}">
+                              Donate
+                          </button>
+                      </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+  </div>
+</section>
+  
+
+<div class="modal fade" id="donateModal" tabindex="-1" aria-labelledby="donateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="donateModalLabel">Donate to a Request</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form id="donationForm">
+                  <input type="hidden" id="request_id" name="request_id">
+                  <div class="mb-3">
+                      <label for="donor_name" class="form-label">Your Name</label>
+                      <input type="text" class="form-control" id="donor_name" name="donor_name" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="donation_type" class="form-label">Type of Donation</label>
+                      <select class="form-select" id="donation_type" name="donation_type" required>
+                          <option value="money">Money</option>
+                          <option value="food">Food</option>
+                          <option value="clothes">Clothes</option>
+                          <option value="other">Other</option>
+                      </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">Donate Now</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+    <!-- Testimonials Section -->
+    <!-- 
+    <section id="testimonials" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">What People Are Saying</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">"This platform helped us get the support we needed after the flood. Thank you!"</p>
+                            <footer class="blockquote-footer">John Doe</footer>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">"I was able to donate food and clothes easily. Great initiative!"</p>
+                            <footer class="blockquote-footer">Jane Smith</footer>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">"The team was very responsive and helped us rebuild our community."</p>
+                            <footer class="blockquote-footer">Mike Johnson</footer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    -->
+
+    <!-- Call to Action Section -->
+    <section id="cta" class="bg-primary text-white text-center py-5">
+        <div class="container">
+            <h2 class="display-4">Join Us in Making a Difference</h2>
+            <p class="lead">Your support can change lives. Let's rebuild communities together.</p>
+            <a href="#donate-now" class="btn btn-light btn-lg">Donate Now</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <div class="container">
+            <p>&copy; Disaster Management Team.</p>
+            <p>Contact us: <a href="mailto:info@disasterhelp.com" class="text-white">info@disasterhelp.com</a></p>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+        
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          const donateButtons = document.querySelectorAll(".donate-btn");
+          donateButtons.forEach(button => {
+              button.addEventListener("click", function () {
+                  // Get request details from the button's data attributes
+                  const requestId = this.getAttribute("data-request-id");
+                  document.getElementById("request_id").value = requestId;
+              });
+          });
+  
+          // Handle form submission
+          document.getElementById("donationForm").addEventListener("submit", function (event) {
+              event.preventDefault();
+  
+              const formData = new FormData(this);
+              fetch("/donate", {
+                  method: "POST",
+                  body: formData
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      // Update the request status
+                      document.getElementById(`status-${data.request_id}`).textContent = "Fulfilled";
+                      
+                      // Close the modal
+                      var donateModal = new bootstrap.Modal(document.getElementById("donateModal"));
+                      donateModal.hide();
+                  } else {
+                      alert("Donation failed. Please try again.");
+                  }
+              })
+              .catch(error => console.error("Error:", error));
+          });
+      });
+  </script>
+    <script>
+        window.addEventListener('scroll', function() {
+          const header = document.getElementById('header');
+          if (window.scrollY > 50) {
+            header.style.backgroundColor = '#fff'; // White background
+            header.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)'; // Add shadow for better visibility
+          } else {
+            header.style.backgroundColor = 'transparent'; // Transparent background
+            header.style.boxShadow = 'none'; // Remove shadow
+          }
+        });
+      </script>
+  
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
