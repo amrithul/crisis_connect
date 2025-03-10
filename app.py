@@ -1,5 +1,5 @@
 import flask
-from flask import Flask, render_template, request, jsonify,redirect,url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 import pickle
 import base64
 import requests
@@ -8,20 +8,24 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from folium.plugins import HeatMap
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 from models import db, DonationRequest, Donation
+import threading
+import time
 
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import LSTM, Dense
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donations.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize the database with the app
+db.init_app(app)
+
+# Load LSTM model for flood prediction
 model = load_model("flood_prediction_lstm.h5")
 
 # Visual Crossing API Key
 API_KEY = "QEEMNFQDYB48AV3V3SVN2BX3W"
-#API KEYS(use any one)
-#QEEMNFQDYB48AV3V3SVN2BX3W
-#BWGMFZVJGFRMYPG92N9MNYJ9G
 
 # List of locations for flood prediction
 LOCATIONS = [
@@ -93,7 +97,7 @@ def update_heatmap():
     heatmap_data = []
 
     for lat, lon in locations:
-        weather_data = get_data(lat, lon)  # Fetch live weather data from API
+        weather_data = get_weather_data(lat, lon)  # Fixed: Changed get_data to get_weather_data
         flood_risk = predict_flood(weather_data)  # Get flood prediction (0 or 1)
 
         # Assign intensity for heatmap (higher for flood-prone areas)
@@ -102,15 +106,9 @@ def update_heatmap():
 
     return jsonify(heatmap_data)
 
-
-
-
-
 data = [{'name':'Delhi', "sel": "selected"}, {'name':'Mumbai', "sel": ""}, {'name':'Kolkata', "sel": ""}, {'name':'Bangalore', "sel": ""}, {'name':'Chennai', "sel": ""}]
-# data = [{'name':'India', "sel": ""}]
 months = [{"name":"May", "sel": ""}, {"name":"June", "sel": ""}, {"name":"July", "sel": "selected"}]
 cities = [{'name':'Delhi', "sel": "selected"}, {'name':'Mumbai', "sel": ""}, {'name':'Kolkata', "sel": ""}, {'name':'Bangalore', "sel": ""}, {'name':'Chennai', "sel": ""}, {'name':'New York', "sel": ""}, {'name':'Los Angeles', "sel": ""}, {'name':'London', "sel": ""}, {'name':'Paris', "sel": ""}, {'name':'Sydney', "sel": ""}, {'name':'Beijing', "sel": ""}]
-
 
 @app.route("/")
 @app.route('/index.html')
@@ -222,22 +220,24 @@ def get_predicts():
     return render_template('predicts.html', cities=cities, cityname="Information about the city")
 
 
+# Route to fetch all requests
+@app.route('/get_requests', methods=['GET'])
+def get_requests():
+    requests = DonationRequest.query.all()
+    requests_data = [{
+        'id': req.id,
+        'name': req.name,
+        'location': req.location,
+        'help_type': req.help_type,
+        'status': req.status,
+        'timestamp': req.timestamp.isoformat() if req.timestamp else None
+    } for req in requests]
+    return jsonify(requests_data)
 
-# Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donations.db'  # Use PostgreSQL/MySQL in production
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
-
-
+# Route for donation page
 @app.route('/donation.html')
 def donation():
-    requests = DonationRequest.query.all()
-    return render_template('donation.html', requests=requests)
+    return render_template('donation.html')
 
 # Route to submit a new donation request
 @app.route('/submit_request', methods=['POST'])
@@ -245,14 +245,12 @@ def submit_request():
     name = request.form['name']
     location = request.form['location']
     help_type = request.form['help_type']
-
-    new_request = DonationRequest(name=name, location=location, help_type=help_type)
+    new_request = DonationRequest(name=name, location=location, help_type=help_type, timestamp=datetime.now())
     db.session.add(new_request)
     db.session.commit()
+    return redirect(url_for('donation'))  # Redirect to the new donation route
 
-    return redirect(url_for('donation'))
-
-
+# Route to handle donations
 @app.route('/donate', methods=['POST'])
 def donate():
     request_id = request.form['request_id']
@@ -267,14 +265,38 @@ def donate():
     request_entry = DonationRequest.query.get(request_id)
     if request_entry:
         request_entry.status = "Fulfilled"
+        request_entry.donated_item = donation_type  # Add a new field to store the donated item
+        request_entry.timestamp = datetime.now()  # Update timestamp when fulfilled
 
     db.session.commit()
 
-    return jsonify({"success": True, "request_id": request_id, "new_status": "Fulfilled"})
+    # Return the updated request data
+    updated_request = {
+        'id': request_entry.id,
+        'name': request_entry.name,
+        'location': request_entry.location,
+        'help_type': request_entry.help_type,
+        'status': request_entry.status,
+        'donated_item': request_entry.donated_item,  # Include the donated item
+        'timestamp': request_entry.timestamp.isoformat() if request_entry.timestamp else None
+    }
+    return jsonify({"success": True, "request": updated_request})
+# Background task to delete fulfilled requests older than a minute
+def delete_old_fulfilled_requests():
+    with app.app_context():
+        while True:
+            time.sleep(60)  # Check every minute
+            now = datetime.now()
+            fulfilled_requests = DonationRequest.query.filter_by(status="Fulfilled").all()
+            for req in fulfilled_requests:
+                if now - req.timestamp > timedelta(minutes=1):
+                    db.session.delete(req)
+            db.session.commit()
 
-
-
-
+# Start the background thread
+threading.Thread(target=delete_old_fulfilled_requests, daemon=True).start()
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
