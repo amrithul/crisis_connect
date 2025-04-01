@@ -25,7 +25,9 @@ db.init_app(app)
 model = load_model("flood_prediction_lstm.h5")
 
 # Visual Crossing API Key
-API_KEY = "QEEMNFQDYB48AV3V3SVN2BX3W"
+API_KEY = "QDJ48TMKR5K6NGW7W99UBX7XH"
+#backup1 = "BWGMFZVJGFRMYPG92N9MNYJ9G"
+#backup2 = "QEEMNFQDYB48AV3V3SVN2BX3W"
 
 # List of locations for flood prediction
 LOCATIONS = [
@@ -200,16 +202,40 @@ def predicts():
 
 @app.route('/predicts.html', methods=["GET", "POST"])
 def get_predicts():
-    cities = [{'name': 'Chengannur', "sel": ""}, {'name': 'Pandanad', "sel": ""}, {'name': 'Aranmula', "sel": ""},
-              {'name': 'Aluva', "sel": ""}, {'name': 'Chalakudy', "sel": ""}, {'name': 'Kuttanad', "sel": ""},
-              {'name': 'Pandalam', "sel": ""}, {'name': 'Chittur', "sel": ""}, {'name': 'Perinthalmanna', "sel": ""},
-              {'name': 'Nileshwar', "sel": ""}]
+    # List of 76 locations
+    cities = [{'name': 'Neyyattinkara', "sel": ""}, {'name': 'Nedumangad', "sel": ""}, {'name': 'Attingal', "sel": ""}, 
+              {'name': 'Varkala', "sel": ""}, {'name': 'Punalur', "sel": ""}, {'name': 'Karunagappally', "sel": ""}, 
+              {'name': 'Paravur', "sel": ""}, {'name': 'Kottarakkara', "sel": ""}, {'name': 'Thiruvalla', "sel": ""}, 
+              {'name': 'Pathanamthitta', "sel": ""}, {'name': 'Adoor', "sel": ""}, {'name': 'Pandalam', "sel": ""}, 
+              {'name': 'Alappuzha', "sel": ""}, {'name': 'Kayamkulam', "sel": ""}, {'name': 'Cherthala', "sel": ""}, 
+              {'name': 'Mavelikara', "sel": ""}, {'name': 'Chengannur', "sel": ""}, {'name': 'Haripad', "sel": ""}, 
+              {'name': 'Kottayam', "sel": ""}, {'name': 'Changanacherry', "sel": ""}, {'name': 'Pala', "sel": ""}, 
+              {'name': 'Pattambi', "sel": ""}, {'name': 'Shoranur', "sel": ""}, {'name': 'Kodungallur', "sel": ""}, 
+              {'name': 'Chittur', "sel": ""}, {'name': 'Cherpulassery', "sel": ""}, {'name': 'Chavakkad', "sel": ""}, 
+              {'name': 'Guruvayoor', "sel": ""}, {'name': 'Mannarkkad', "sel": ""}, {'name': 'Ottapalam', "sel": ""}, 
+              {'name': 'Wadakkanchery', "sel": ""}, {'name': 'Palakkad', "sel": ""}, {'name': 'Tirurangadi', "sel": ""}, 
+              {'name': 'Vatakara', "sel": ""}, {'name': 'Koyilandy', "sel": ""}, {'name': 'Mukkam', "sel": ""}, 
+              {'name': 'Ramanattukara', "sel": ""}, {'name': 'Feroke', "sel": ""}, {'name': 'Payyoli', "sel": ""}, 
+              {'name': 'Koduvally', "sel": ""}, {'name': 'Kalpetta', "sel": ""}, {'name': 'Mananthavadi', "sel": ""}, 
+              {'name': 'Sultan Bathery', "sel": ""}, {'name': 'Thalassery', "sel": ""}, {'name': 'Taliparamba', "sel": ""}, 
+              {'name': 'Payyanur', "sel": ""}, {'name': 'Mattannur', "sel": ""}, {'name': 'Koothuparamba', "sel": ""}, 
+              {'name': 'Anthoor', "sel": ""}, {'name': 'Iritty', "sel": ""}, {'name': 'Panoor', "sel": ""}, 
+              {'name': 'Sreekandapuram', "sel": ""}, {'name': 'Kasaragod', "sel": ""}, {'name': 'Kanhangad', "sel": ""}, 
+              {'name': 'Nileshwaram', "sel": ""}, {'name': 'Vaikom', "sel": ""}, {'name': 'Ettumanoor', "sel": ""}, 
+              {'name': 'Erattupetta', "sel": ""}, {'name': 'Thodupuzha', "sel": ""}, {'name': 'Kattappana', "sel": ""}, 
+              {'name': 'Thripunithura', "sel": ""}, {'name': 'Thrikkakara', "sel": ""}, {'name': 'Kalamassery', "sel": ""}, 
+              {'name': 'Perumbavoor', "sel": ""}, {'name': 'Aluva', "sel": ""}, {'name': 'Muvattupuzha', "sel": ""}, 
+              {'name': 'Kothamangalam', "sel": ""}, {'name': 'North Paravoor', "sel": ""}, {'name': 'Angamaly', "sel": ""}, 
+              {'name': 'Maradu', "sel": ""}, {'name': 'Eloor', "sel": ""}, {'name': 'Piravom', "sel": ""}, 
+              {'name': 'Koothattukulam', "sel": ""}, {'name': 'Irinjalakuda', "sel": ""}, {'name': 'Kunnamkulam', "sel": ""}, 
+              {'name': 'Chalakudy', "sel": ""}]  # Replace with the full list of cities
 
     temp = maxt = wspd = cloudcover = percip = humidity = pred = None  # Default values
 
     if request.method == "POST":
         try:
             cityname = request.form["city"]
+            print(f"Selected city: {cityname}")
             for item in cities:
                 if item['name'] == cityname:
                     item['sel'] = 'selected'
@@ -221,6 +247,7 @@ def get_predicts():
             response = requests.get(url=URL, params=PARAMS)
             data = response.json()
             lat, lon = data['items'][0]['position']['lat'], data['items'][0]['position']['lng']
+            print(f"Latitude: {lat}, Longitude: {lon}")
 
             # Get weather data
             weather_data = get_weather_data(lat, lon)
@@ -254,7 +281,6 @@ def get_predicts():
             return render_template('predicts.html', cities=cities, cityname="Oops, we weren't able to retrieve data for that city.")
 
     return render_template('predicts.html', cities=cities, cityname="Information about the city")
-
 
 # Route to fetch all requests
 @app.route('/get_requests', methods=['GET'])
