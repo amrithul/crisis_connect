@@ -92,6 +92,120 @@
         background-color: #16a0c8;
         border-color: #16a0c8;
       }
+      
+      /* New styles for additional features */
+      .impact-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #1bb1dc;
+      }
+      .impact-label {
+        font-size: 1rem;
+        color: #666;
+      }
+      .feature-icon {
+        font-size: 2rem;
+        color: #1bb1dc;
+        margin-bottom: 1rem;
+      }
+      .donation-tier {
+        border: 2px solid #1bb1dc;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+      .donation-tier:hover {
+        transform: scale(1.03);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      }
+      .tier-highlight {
+        background-color: #f0f9ff;
+      }
+      .payment-method {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .payment-method:hover {
+        border-color: #1bb1dc;
+      }
+      .payment-method.selected {
+        border-color: #1bb1dc;
+        background-color: #f0f9ff;
+      }
+      .confirmation-modal .modal-body {
+        text-align: center;
+        padding: 30px;
+      }
+      .confirmation-modal .modal-body i {
+        font-size: 4rem;
+        color: #28a745;
+        margin-bottom: 20px;
+      }
+
+      /* Compact FAQ Styles */
+      #faq {
+        background-color: #fff;
+      }
+      
+      .faq-list {
+        border-radius: 8px;
+      }
+      
+      .faq-item {
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+      
+      .faq-item:hover {
+        border-color: #1bb1dc;
+      }
+      
+      .faq-question {
+        cursor: pointer;
+        font-weight: 500;
+        color: #333;
+        background-color: #f9f9f9;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+      
+      .faq-question:hover {
+        background-color: #f0f0f0;
+      }
+      
+      .faq-question i {
+        transition: transform 0.2s ease;
+        font-size: 0.8rem;
+        color: #666;
+      }
+      
+      .faq-item[open] .faq-question {
+        background-color: #f0f9ff;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      
+      .faq-item[open] .faq-question i {
+        transform: rotate(180deg);
+        color: #1bb1dc;
+      }
+      
+      .faq-answer {
+        background-color: #fff;
+        border-top: 1px solid #e0e0e0;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+        font-size: 0.95rem;
+        color: #555;
+      }
+      
+      .faq-answer p {
+        margin-bottom: 0;
+      }
     </style>
 
   </head>
@@ -153,6 +267,31 @@
         </div>
     </header>
     
+    <!-- Impact Statistics Section (New) -->
+    <section id="impact-stats" class="py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-5">Our Impact</h2>
+        <div class="row text-center">
+          <div class="col-md-3 mb-4">
+            <div class="impact-number">1,250+</div>
+            <div class="impact-label">Families Helped</div>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="impact-number">$250K+</div>
+            <div class="impact-label">Donations Raised</div>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="impact-number">75+</div>
+            <div class="impact-label">Communities Supported</div>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="impact-number">500+</div>
+            <div class="impact-label">Volunteers</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
     <!-- Donation Impact Section (New) -->
     <section id="donation-impact" class="py-5">
         <div class="container">
@@ -197,9 +336,69 @@
             </div>
         </div>
     </section>
+    
+    <!-- Donation Tiers Section (New) -->
+    <section id="donation-tiers" class="py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-5">Donation Tiers</h2>
+        <div class="row">
+          <div class="col-md-3 mb-4">
+            <div class="card text-center h-100 donation-tier p-3">
+              <h3 class="text-primary">Supporter</h3>
+              <h4 class="my-3">$25 - $49</h4>
+              <ul class="list-unstyled text-start">
+                <li><i class="fa fa-check text-success me-2"></i> Provides food for a family</li>
+                <li><i class="fa fa-check text-success me-2"></i> Thank you email</li>
+                <li><i class="fa fa-check text-success me-2"></i> Impact report</li>
+              </ul>
+              <button class="btn btn-primary mt-auto" onclick="setAmount(25)">Donate Now</button>
+            </div>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="card text-center h-100 donation-tier p-3">
+              <h3 class="text-primary">Helper</h3>
+              <h4 class="my-3">$50 - $99</h4>
+              <ul class="list-unstyled text-start">
+                <li><i class="fa fa-check text-success me-2"></i> Provides shelter for a family</li>
+                <li><i class="fa fa-check text-success me-2"></i> All Supporter benefits</li>
+                <li><i class="fa fa-check text-success me-2"></i> Digital certificate</li>
+              </ul>
+              <button class="btn btn-primary mt-auto" onclick="setAmount(50)">Donate Now</button>
+            </div>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="card text-center h-100 donation-tier p-3 tier-highlight">
+              <div class="position-absolute top-0 end-0 m-2">
+                <span class="badge bg-warning">Most Popular</span>
+              </div>
+              <h3 class="text-primary">Champion</h3>
+              <h4 class="my-3">$100 - $249</h4>
+              <ul class="list-unstyled text-start">
+                <li><i class="fa fa-check text-success me-2"></i> Provides medical supplies</li>
+                <li><i class="fa fa-check text-success me-2"></i> All Helper benefits</li>
+                <li><i class="fa fa-check text-success me-2"></i> Recognition on our website</li>
+              </ul>
+              <button class="btn btn-primary mt-auto" onclick="setAmount(100)">Donate Now</button>
+            </div>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="card text-center h-100 donation-tier p-3">
+              <h3 class="text-primary">Hero</h3>
+              <h4 class="my-3">$250+</h4>
+              <ul class="list-unstyled text-start">
+                <li><i class="fa fa-check text-success me-2"></i> Supports an entire community</li>
+                <li><i class="fa fa-check text-success me-2"></i> All Champion benefits</li>
+                <li><i class="fa fa-check text-success me-2"></i> Personal thank you call</li>
+              </ul>
+              <button class="btn btn-primary mt-auto" onclick="setAmount(250)">Donate Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Request Help Section -->
-    <section id="request-help" class="bg-light py-5">
+    <section id="request-help" class="py-5">
         <div class="container">
             <h2 class="text-center mb-4">Request Help</h2>
             <p class="text-center mb-4">If you or your community are in need of assistance, please submit your request below.</p>
@@ -245,12 +444,12 @@
     </section>
 
     <!-- Donate Now Section -->
-    <section id="donate-now" class="py-5">
+    <section id="donate-now" class="py-5 bg-light">
         <div class="container">
             <h2 class="text-center mb-4">Donate Now</h2>
             <p class="text-center mb-4">Your support can make a difference. Please consider donating to help those in need.</p>
             <div class="row justify-content-center">
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <div class="card mb-4">
                         <div class="card-body">
                             <form action="/donate" method="POST" id="donationForm">
@@ -272,6 +471,54 @@
                                     </div>
                                     <input type="number" class="form-control" id="donation_amount" name="donation_amount" min="1" required>
                                 </div>
+                                
+                                <!-- Payment Method Section (New) -->
+                                <div class="mb-3">
+                                  <label class="form-label">Payment Method</label>
+                                  <div class="payment-method" onclick="selectPaymentMethod('credit')">
+                                    <div class="form-check">
+                                      <input class="form-check-input" type="radio" name="payment_method" id="credit" value="credit" checked>
+                                      <label class="form-check-label" for="credit">
+                                        <i class="fa fa-credit-card me-2"></i> Credit/Debit Card
+                                      </label>
+                                    </div>
+                                  </div>
+                                  <div class="payment-method" onclick="selectPaymentMethod('paypal')">
+                                    <div class="form-check">
+                                      <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal">
+                                      <label class="form-check-label" for="paypal">
+                                        <i class="fa fa-paypal me-2"></i> PayPal
+                                      </label>
+                                    </div>
+                                  </div>
+                                  <div class="payment-method" onclick="selectPaymentMethod('bank')">
+                                    <div class="form-check">
+                                      <input class="form-check-input" type="radio" name="payment_method" id="bank" value="bank">
+                                      <label class="form-check-label" for="bank">
+                                        <i class="fa fa-university me-2"></i> Bank Transfer
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <!-- Credit Card Fields (New) - Shown by default -->
+                                <div id="creditCardFields">
+                                  <div class="mb-3">
+                                    <label for="card_number" class="form-label">Card Number</label>
+                                    <input type="text" class="form-control" id="card_number" name="card_number" placeholder="1234 5678 9012 3456">
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                      <label for="expiry_date" class="form-label">Expiry Date</label>
+                                      <input type="text" class="form-control" id="expiry_date" name="expiry_date" placeholder="MM/YY">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                      <label for="cvv" class="form-label">CVV</label>
+                                      <input type="text" class="form-control" id="cvv" name="cvv" placeholder="123">
+                                    </div>
+                                  </div>
+                                </div>
+                                
                                 <div class="mb-3">
                                     <label for="donation_type" class="form-label">Type of Donation</label>
                                     <select class="form-select" id="donation_type" name="donation_type" required>
@@ -283,10 +530,22 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
+                                    <label for="donation_message" class="form-label">Message (Optional)</label>
+                                    <textarea class="form-control" id="donation_message" name="donation_message" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="recurring" name="recurring">
                                         <label class="form-check-label" for="recurring">
                                             Make this a monthly donation
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="anonymous" name="anonymous">
+                                        <label class="form-check-label" for="anonymous">
+                                            Donate anonymously
                                         </label>
                                     </div>
                                 </div>
@@ -300,7 +559,7 @@
     </section>
 
     <!-- Current Requests Section -->
-    <section id="current-requests" class="bg-light py-5">
+    <section id="current-requests" class="py-5">
       <div class="container">
           <h2 class="text-center mb-4">Current Requests</h2>
           <div class="table-responsive">
@@ -323,52 +582,72 @@
       </div>
     </section>
 
-   <!-- Donate Modal -->
-   <div class="modal fade" id="donateModal" tabindex="-1" aria-labelledby="donateModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="donateModalLabel">Donate to a Request</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="specificDonationForm">
-            <input type="hidden" id="request_id" name="request_id">
-            <div class="mb-3">
-              <label for="modal_donor_name" class="form-label">Your Name</label>
-              <input type="text" class="form-control" id="modal_donor_name" name="donor_name" required>
-            </div>
-            <div class="mb-3">
-              <label for="modal_donor_email" class="form-label">Your Email</label>
-              <input type="email" class="form-control" id="modal_donor_email" name="donor_email" required>
-            </div>
-            <div class="mb-3">
-              <label for="modal_donation_type" class="form-label">Type of Donation</label>
-              <select class="form-select" id="modal_donation_type" name="donation_type" required>
-                <option value="money">Money</option>
-                <option value="food">Food</option>
-                <option value="clothes">Clothes</option>
-                <option value="medical">Medical Supplies</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div class="mb-3" id="amountField">
-              <label for="modal_donation_amount" class="form-label">Amount ($)</label>
-              <input type="number" class="form-control" id="modal_donation_amount" name="donation_amount" min="1">
-            </div>
-            <div class="mb-3">
-              <label for="modal_message" class="form-label">Message (Optional)</label>
-              <textarea class="form-control" id="modal_message" name="message" rows="2"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Complete Donation</button>
-          </form>
-        </div>
+  <!-- Donate Modal -->
+<div class="modal fade" id="donateModal" tabindex="-1" aria-labelledby="donateModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="donateModalLabel">Donate to a Request</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="specificDonationForm">
+          <input type="hidden" id="request_id" name="request_id">
+          <div class="mb-3">
+            <label for="modal_donor_name" class="form-label">Your Name</label>
+            <input type="text" class="form-control" id="modal_donor_name" name="donor_name" required>
+          </div>
+          <div class="mb-3">
+            <label for="modal_donor_email" class="form-label">Your Email</label>
+            <input type="email" class="form-control" id="modal_donor_email" name="donor_email" required>
+          </div>
+          <div class="mb-3">
+            <label for="modal_donation_type" class="form-label">Type of Donation</label>
+            <select class="form-select" id="modal_donation_type" name="donation_type" required>
+              <option value="money">Money</option>
+              <option value="food">Food</option>
+              <option value="clothes">Clothes</option>
+              <option value="medical">Medical Supplies</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="mb-3" id="amountField">
+            <label for="modal_donation_amount" class="form-label">Amount ($)</label>
+            <input type="number" class="form-control" id="modal_donation_amount" name="donation_amount" min="1" value="25">
+          </div>
+          <div class="mb-3">
+            <label for="modal_message" class="form-label">Message (Optional)</label>
+            <textarea class="form-control" id="modal_message" name="message" rows="2"></textarea>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="modal_anonymous" name="anonymous">
+            <label class="form-check-label" for="modal_anonymous">Donate anonymously</label>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 py-2">Complete Donation</button>
+        </form>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Donation Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center p-5">
+        <div class="mb-4">
+          <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+        </div>
+        <h3 class="mb-3">Thank You for Your Donation!</h3>
+        <p id="confirmationMessage" class="mb-4">Your generous contribution will help those in need.</p>
+        <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
     <!-- Testimonials Section (New) -->
-    <section id="testimonials" class="py-5">
+    <section id="testimonials" class="py-5 bg-light">
         <div class="container">
             <h2 class="text-center mb-4">Success Stories</h2>
             <div class="row">
@@ -405,6 +684,63 @@
             </div>
         </div>
     </section>
+    
+ <!-- Compact FAQ Section -->
+<section id="faq" class="py-4">
+    <div class="container">
+      <h3 class="text-center mb-4">Common Questions</h3>
+      
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="faq-list">
+            <!-- FAQ Item 1 -->
+            <details class="faq-item mb-3">
+              <summary class="faq-question p-3 d-flex justify-content-between align-items-center">
+                <span>How are donations distributed?</span>
+                <i class="fas fa-chevron-down"></i>
+              </summary>
+              <div class="faq-answer p-3">
+                <p>Donations are distributed based on verified needs through our network of local partners, prioritizing areas with the most urgent needs.</p>
+              </div>
+            </details>
+            
+            <!-- FAQ Item 2 -->
+            <details class="faq-item mb-3">
+              <summary class="faq-question p-3 d-flex justify-content-between align-items-center">
+                <span>Can I specify where my donation goes?</span>
+                <i class="fas fa-chevron-down"></i>
+              </summary>
+              <div class="faq-answer p-3">
+                <p>Yes! You can choose to support a specific request or let us allocate your donation to where it's needed most.</p>
+              </div>
+            </details>
+            
+            <!-- FAQ Item 3 -->
+            <details class="faq-item mb-3">
+              <summary class="faq-question p-3 d-flex justify-content-between align-items-center">
+                <span>Is my donation tax-deductible?</span>
+                <i class="fas fa-chevron-down"></i>
+              </summary>
+              <div class="faq-answer p-3">
+                <p>Yes, Crisis Connect is a registered 501(c)(3) nonprofit. Donations are tax-deductible to the extent allowed by law.</p>
+              </div>
+            </details>
+            
+            <!-- FAQ Item 4 -->
+            <details class="faq-item mb-3">
+              <summary class="faq-question p-3 d-flex justify-content-between align-items-center">
+                <span>How quickly are requests fulfilled?</span>
+                <i class="fas fa-chevron-down"></i>
+              </summary>
+              <div class="faq-answer p-3">
+                <p>Emergency needs are typically fulfilled within 24-48 hours, while other requests may take longer depending on complexity.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
     <!-- Call to Action Section -->
     <section id="cta" class="py-5" style="background-color: #1bb1dc; color: white;">
@@ -474,18 +810,38 @@
       // Function to set donation amount when clicking preset buttons
       function setAmount(amount) {
         document.getElementById("donation_amount").value = amount;
+        document.getElementById("modal_donation_amount").value = amount;
       }
       
-      // Function to toggle amount field visibility based on donation type
-      document.getElementById("modal_donation_type").addEventListener("change", function() {
-        var amountField = document.getElementById("amountField");
-        if (this.value === "money") {
-          amountField.style.display = "block";
+      // Function to select payment method
+      function selectPaymentMethod(method) {
+        document.getElementById(method).checked = true;
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        paymentMethods.forEach(pm => pm.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        
+        // Show/hide credit card fields based on selection
+        if (method === 'credit') {
+          document.getElementById('creditCardFields').style.display = 'block';
         } else {
-          amountField.style.display = "none";
+          document.getElementById('creditCardFields').style.display = 'none';
         }
+      }
+      
+      // Initialize payment method selection
+      document.addEventListener('DOMContentLoaded', function() {
+        selectPaymentMethod('credit');
       });
       
+      // Show confirmation modal
+      function showConfirmation(message) {
+        if (message) {
+          document.getElementById('confirmationMessage').textContent = message;
+        }
+        var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+        confirmationModal.show();
+      }
+
       document.addEventListener("DOMContentLoaded", function () {
           // Function to fetch and display requests
           function fetchRequests() {
@@ -504,14 +860,15 @@
                               <td id="status-${request.id}">${request.status}</td>
                               <td id="donated-item-${request.id}">${request.donated_item || "Not donated yet"}</td>
                               <td>
-                                  <button class="btn btn-primary donate-btn"
+                                  <button class="btn ${request.status === 'Fulfilled' ? 'btn-success' : 'btn-primary'} donate-btn"
                                       data-bs-toggle="modal"
                                       data-bs-target="#donateModal"
                                       data-request-id="${request.id}"
                                       data-name="${request.name}"
                                       data-location="${request.location}"
-                                      data-help-type="${request.help_type}">
-                                      Donate
+                                      data-help-type="${request.help_type}"
+                                      ${request.status === 'Fulfilled' ? 'disabled' : ''}>
+                                      ${request.status === 'Fulfilled' ? 'Donated' : 'Donate'}
                                   </button>
                               </td>
                           `;
@@ -524,8 +881,8 @@
           // Fetch requests when the page loads
           fetchRequests();
         
-          // Refresh the requests every 30 seconds
-          setInterval(fetchRequests, 30000);
+          // Refresh the requests every 5 seconds (changed from 1 second to reduce load)
+          setInterval(fetchRequests, 5000);
         
           // Handle form submission for request form
           document.getElementById("requestForm").addEventListener("submit", function (event) {
@@ -539,33 +896,41 @@
                   .then((response) => response.json())
                   .then((data) => {
                       if (data.success) {
-                          alert("Request submitted successfully!");
-                          this.reset(); // Reset the form
-                          fetchRequests(); // Refresh the requests table
+                          // Reset the form fields
+                          this.reset();
+                          
+                          // Show success message
+                          showConfirmation("Request submitted successfully!");
+                          
+                          // Refresh the requests table
+                          fetchRequests();
                       } else {
                           alert("Failed to submit request. Please try again.");
                       }
                   })
-                  .catch((error) => console.error("Error:", error));
+                  .catch((error) => {
+                      console.error("Error:", error);
+                      alert("An error occurred while submitting the request.");
+                  });
           });
         
           // Handle click events for dynamically created "Donate" buttons
           document.addEventListener("click", function (event) {
-              if (event.target.classList.contains("donate-btn")) {
+              if (event.target.classList.contains("donate-btn") && !event.target.disabled) {
                   const requestId = event.target.getAttribute("data-request-id");
                   const name = event.target.getAttribute("data-name");
-                  const location = event.target.getAttribute("data-location");
                   const helpType = event.target.getAttribute("data-help-type");
         
-                  // Set the request ID in the donation form
+                  // Set the request ID and donation type in the donation form
                   document.getElementById("request_id").value = requestId;
+                  document.getElementById("modal_donation_type").value = helpType.toLowerCase();
         
                   // Update the modal title
-                  document.getElementById("donateModalLabel").textContent = `Donate to ${name}'s Request for ${helpType}`;
+                  document.getElementById("donateModalLabel").textContent = `Donate ${helpType} to ${name}'s Request`;
                   
-                  // Show/hide amount field based on initial donation type
-                  const donationType = document.getElementById("modal_donation_type").value;
-                  document.getElementById("amountField").style.display = donationType === "money" ? "block" : "none";
+                  // Show/hide amount field based on donation type
+                  document.getElementById("amountField").style.display = 
+                      (helpType.toLowerCase() === "money") ? "block" : "none";
               }
           });
         
@@ -574,6 +939,8 @@
               event.preventDefault();
         
               const formData = new FormData(this);
+              const donationType = formData.get("donation_type");
+              
               fetch("/donate", {
                   method: "POST",
                   body: formData,
@@ -581,18 +948,46 @@
                   .then((response) => response.json())
                   .then((data) => {
                       if (data.success) {
-                          // Update the request status
-                          document.getElementById(`status-${data.request_id}`).textContent = "Fulfilled";
-                          document.getElementById(`donated-item-${data.request_id}`).textContent = data.donation_type;
+                          // Update the request status and donated item
+                          if (data.request_id) {
+                              // Update status cell
+                              document.getElementById(`status-${data.request_id}`).textContent = "Fulfilled";
+                              
+                              // Update donated item cell
+                              const donatedItem = donationType === "money" ? `$${data.amount}` : donationType;
+                              document.getElementById(`donated-item-${data.request_id}`).textContent = donatedItem;
+                              
+                              // Update the donate button
+                              const donateBtn = document.querySelector(`button[data-request-id="${data.request_id}"]`);
+                              if (donateBtn) {
+                                  donateBtn.classList.remove("btn-primary");
+                                  donateBtn.classList.add("btn-success");
+                                  donateBtn.textContent = "Donated";
+                                  donateBtn.disabled = true;
+                              }
+                          }
         
-                          // Reset form and close the modal
+                          // Reset form
                           this.reset();
-                          var donateModal = document.getElementById("donateModal");
-                          var modal = bootstrap.Modal.getInstance(donateModal);
-                          modal.hide();
                           
-                          // Show thank you alert
-                          alert("Thank you for your donation! Your support makes a real difference.");
+                          // Close the modal
+                          var donateModal = bootstrap.Modal.getInstance(document.getElementById('donateModal'));
+                          donateModal.hide();
+                          
+                          // Show confirmation modal with custom message
+                          const message = donationType === "money" 
+                              ? `Thank you for your $${data.amount} donation to ${data.recipient_name}'s request!`
+                              : `Thank you for donating ${donationType} to ${data.recipient_name}'s request!`;
+                          showConfirmation(message);
+                          
+                          // Update progress bar
+                          if (donationType === "money") {
+                              const currentAmount = parseFloat(document.querySelector(".progress-bar").getAttribute("aria-valuenow"));
+                              const newAmount = currentAmount + (parseInt(data.amount) / 100);
+                              document.querySelector(".progress-bar").style.width = newAmount + "%";
+                              document.querySelector(".progress-bar").setAttribute("aria-valuenow", newAmount);
+                              document.querySelector(".progress-bar").textContent = "$" + (newAmount * 100) + " Raised";
+                          }
                       } else {
                           alert("Donation failed. Please try again.");
                       }
@@ -615,12 +1010,12 @@
                           // Reset form
                           this.reset();
                           
-                          // Show thank you alert
-                          alert("Thank you for your donation! Your support helps communities in need.");
+                          // Show confirmation modal
+                          showConfirmation(`Thank you for your $${data.amount} donation! Your support helps communities in need.`);
                           
-                          // Update progress bar (in a real app, this would come from the server)
+                          // Update progress bar
                           const currentAmount = parseFloat(document.querySelector(".progress-bar").getAttribute("aria-valuenow"));
-                          const newAmount = currentAmount + 5; // Just for demo purposes
+                          const newAmount = currentAmount + (parseInt(data.amount) / 100);
                           document.querySelector(".progress-bar").style.width = newAmount + "%";
                           document.querySelector(".progress-bar").setAttribute("aria-valuenow", newAmount);
                           document.querySelector(".progress-bar").textContent = "$" + (newAmount * 100) + " Raised";
