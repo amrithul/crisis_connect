@@ -267,28 +267,7 @@
         </div>
       </section>
 
-      <!--==========================
-      Call To Action Section
-    ============================-->
-      <!-- <section id="call-to-action" class="wow fadeInUp">
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-9 text-center text-lg-left">
-              <h3 class="cta-title">Call To Action</h3>
-              <p class="cta-text">
-                Duis aute irure dolor in reprehenderit in voluptate velit esse
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                cupidatat non proident, sunt in culpa qui officia deserunt
-                mollit anim id est laborum.
-              </p>
-            </div>
-            <div class="col-lg-3 cta-btn-container text-center">
-              <a class="cta-btn align-middle" href="#">Call To Action</a>
-            </div>
-          </div>
-        </div>
-      </section> -->
-      <!-- #call-to-action -->
+    
 
       <!--==========================
       Team Section
@@ -376,88 +355,6 @@
       </section>
       <!-- #team -->
 
-      <!--==========================
-      Frequently Asked Questions Section
-    ============================-->
-    <!-- 
-      <section id="faq">
-        <div class="container">
-          <header class="section-header">
-            <h3>Frequently Asked Questions</h3>
-            <p></p>
-          </header>
-
-          <ul id="faq-list" class="wow fadeInUp">
-            <li>
-              <a data-toggle="collapse" class="collapsed" href="#faq1"
-                >Inspiration <i class="ion-android-remove"></i
-              ></a>
-              <div id="faq1" class="collapse" data-parent="#faq-list">
-                <p>
-                  According to the World Resources Institute, over 80% of India's population, that is, 1.08 billion people, are at risk due to floods. Floods cause an economic loss of nearly 15 Billion USD per year in India. In the recent Kerala flood tragedy, over 100 people lost their lives, and over 15,000 houses and buildings were swept away in the torrential rains. These kinds of floods happen almost every single year in the flood prone areas, and cause major damage to life and property. The major cause of this is overflowing of rivers, reservoirs and other water bodies due to extensive rainfall during the monsoon season. We wanted to make a system for effective prediction of floods in India. This kind of system does not exist yet due to lack of quality data for prediction.
-                </p>
-              </div>
-            </li>
-
-            <li>
-              <a data-toggle="collapse" href="#faq2" class="collapsed"
-                >How we built it <i class="ion-android-remove"></i
-              ></a>
-              <div id="faq2" class="collapse" data-parent="#faq-list">
-                <p>
-                  <b>THE DATASET</b><br>
-                  <br>
-Our thesis was that we could predict floods from weather data using machine learning. For the dataset, we first scraped this website http://floodlist.com/tag/india using the python beautiful-soup 4 library. This website gave us data about past floods India.- when and where they occurred. We then used the visual crossing weather API to obtain historic weather data such as precipitation, humidity, temperature data, cloud cover etc. in those areas, and during those times. We also performed data augmentation on this, and then stored it in a .csv file.<br>
-<br>
-<b>ML MODEL</b><br>
-<br>
-Our ML model is based on python sci-kit learn library. We used pandas to generate a data-frame from the .csv file, and then tried various ML models such as Logistic regression, KNN, and Random Forester. Out of these, the Random Forester classifier gave the highest accuracy of 98.71% on the test set. We then saved our model using a .pickle file.<br>
-<br>
-<b>DATA VISUALIZATION</b><br>
-<br>
-We first obtained a dataset of the major cities and towns in India (around 200 of them) along with their latitude, longitude and population. We then got the weather forecast of each city using the weather API and ran that into our ML model. Next, we plotted the data from the ML model on a map, using plotly chart studio. The various maps represent various data such as flood prediction, precipitation and damage estimates, in the form of scatter plots, heat-maps and bubble plots. The damage estimates were calculated using the flood prediction and population. We also plotted it on satellite images.<br>
-<br>
-<b>FRONT-END AND HOSTING</b><br>
-<br>
-Our web app is based on the flask python framework. We rendered HTML templates on top of this flask back-end, and styled it using CSS. Our web app is hosted via Heroku.<br>
-<br>                
-</p>
-              </div>
-            </li>
-
-            <li>
-              <a data-toggle="collapse" href="#faq3" class="collapsed"
-                >Accomplishments we are proud of<i
-                  class="ion-android-remove"
-                ></i
-              ></a>
-              <div id="faq3" class="collapse" data-parent="#faq-list">
-                <p>
-                - Creating the best dataset in existence for flood prediction in India.<br>
-                - Making a highly effective ML model with over 98% accuracy.<br>
-                - Making a clean-looking UI for the web app.<br>
-                - Creating sophisticated plots for data visualization.<br>
-                </p>
-              </div>
-            </li>
-
-            <li>
-              <a data-toggle="collapse" href="#faq4" class="collapsed"
-                >What is next for Crisis Connect<i class="ion-android-remove"></i
-              ></a>
-              <div id="faq4" class="collapse" data-parent="#faq-list">
-                <p>
-                - Expanding to surrounding nations such as Bangladesh, Myanmar, Pakistan etc.<br>
-                - Making an image classification model for satellite images in flood areas<br>
-                - Writing a research paper on our project<br>
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </section>
-      -->
-      <!-- #faq -->
     </main>
 
     <!--==========================
