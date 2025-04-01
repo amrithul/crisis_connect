@@ -8,87 +8,428 @@
     <meta content="" name="description" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <style>
-      img {
-        max-width: 90%; /* Responsive image */
-        height: auto;
-        border: 2px solid #000; /* Optional border */
-        display: block;
-        margin: 20px auto; /* Centering */
-     }
-     #main {
-      display: flex;
-      padding-top: 100px;
-      justify-content: center; /* Horizontally centers content */
-      align-items: center; /* Vertically centers content (if needed) */
-      min-height: 100vh; /* Optional: makes it take full screen height */
+      :root {
+        --primary-color: #004a99;
+        --secondary-color: #007bff;
+        --accent-color: #e74c3c;
+        --light-color: #ecf0f1;
+        --dark-color: #2c3e50;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
       }
-  
+      
+      body {
+        font-family: 'Montserrat', sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+        line-height: 1.6;
+        padding-top: 80px;
+      }
+      
+      /* Original Nav Bar Style */
+      #header {
+        background: var(--primary-color);
+        height: 80px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 997;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        transition: var(--transition);
+      }
+      
+      #header .logo h1 {
+        font-size: 28px;
+        margin: 0;
+        padding: 0;
+        line-height: 1;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      
+      #header .logo h1 a {
+        color: #fff;
+        text-decoration: none;
+      }
+      
+      .main-nav ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      
+      .main-nav ul li {
+        display: inline-block;
+        margin-left: 15px;
+      }
+      
+      .main-nav ul li a {
+        color: #fff;
+        padding: 8px 15px;
+        border-radius: 50px;
+        transition: var(--transition);
+        font-size: 14px;
+        font-weight: 600;
+      }
+      
+      .main-nav ul li a:hover {
+        color: #fff;
+        background: var(--secondary-color);
+      }
+      
+      .main-nav ul li a.active {
+        background: var(--secondary-color);
+      }
+      
+      /* Main Content Styling */
+      .section-bg {
+        padding: 60px 0;
+      }
+      
+      .section-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      
+      .section-header h2 {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        position: relative;
+        display: inline-block;
+      }
+      
+      .section-header h2:after {
+        content: '';
+        position: absolute;
+        width: 60px;
+        height: 3px;
+        background: var(--secondary-color);
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      
+      .section-header p {
+        font-size: 16px;
+        color: #6c757d;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      
+      /* Tab System */
+      .tab-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+      }
+      
+      .tab-buttons {
+        display: flex;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+      }
+      
+      .tab-button {
+        padding: 15px 25px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        color: #495057;
+        transition: var(--transition);
+        position: relative;
+      }
+      
+      .tab-button:hover {
+        color: var(--primary-color);
+      }
+      
+      .tab-button.active {
+        color: var(--primary-color);
+        background: #fff;
+      }
+      
+      .tab-button.active:after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--secondary-color);
+      }
+      
+      .tab-content {
+        display: none;
+        padding: 30px;
+      }
+      
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      /* Map Styling */
+      .map-container {
+        position: relative;
+        margin: 20px 0;
+      }
+      
+      .satellite-img, #weather-map {
+        width: 100%;
+        height: 600px;
+        border: 2px solid #ddd;
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+      }
+      
+      .satellite-img:hover, #weather-map:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+      
+      /* Weather Cards */
+      .weather-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+      }
+      
+      .weather-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+      
+      .weather-icon {
+        width: 70px;
+        height: 70px;
+        margin-right: 20px;
+      }
+      
+      .weather-details {
+        flex-grow: 1;
+      }
+      
+      /* Forecast Styling */
+      .forecast-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
+      
+      .forecast-day {
+        background: #fff;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+        text-align: center;
+      }
+      
+      .forecast-day:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+      
+      .forecast-day img {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 10px;
+        display: block;
+      }
+      
+      /* Alerts and Features */
+      .alert-card {
+        background: #fff3cd;
+        border-left: 4px solid var(--warning-color);
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 4px;
+        transition: var(--transition);
+      }
+      
+      .alert-card:hover {
+        transform: scale(1.02);
+      }
+      
+      .alert-card.danger {
+        background: #f8d7da;
+        border-left-color: var(--danger-color);
+      }
+      
+      .feature-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+      }
+      
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+      
+      /* Charts */
+      .chart-container {
+        width: 100%;
+        height: 400px;
+        margin: 20px 0;
+      }
+      
+      /* Footer */
+      #footer {
+        background: var(--primary-color);
+        color: #fff;
+        padding: 30px 0;
+        text-align: center;
+      }
+      
+      #footer .copyright {
+        margin: 0;
+        font-size: 14px;
+      }
+      
+      /* Back to top button */
+      .back-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--primary-color);
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: var(--transition);
+        z-index: 99;
+        opacity: 0;
+        visibility: hidden;
+      }
+      
+      .back-to-top.active {
+        opacity: 1;
+        visibility: visible;
+      }
+      
+      .back-to-top:hover {
+        background: var(--secondary-color);
+        color: #fff;
+      }
+      
+      /* Responsive Adjustments */
+      @media (max-width: 992px) {
+        .forecast-container {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .tab-buttons {
+          flex-direction: column;
+        }
+        
+        .tab-button {
+          width: 100%;
+          text-align: center;
+        }
+        
+        .satellite-img, #weather-map {
+          height: 400px;
+        }
+      }
+      
+      @media (max-width: 576px) {
+        .section-header h2 {
+          font-size: 28px;
+        }
+        
+        .forecast-container {
+          grid-template-columns: 1fr;
+        }
+        
+        .satellite-img, #weather-map {
+          height: 300px;
+        }
+      }
+      
+      /* Animation Classes */
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      
+      .shake {
+        animation: shake 0.5s;
+      }
+      
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-5px); }
+        40%, 80% { transform: translateX(5px); }
+      }
     </style>
 
     <!-- Favicons -->
-    <link
-      href="{{ url_for('static', filename='img/favicon-2.png') }}"
-      rel="icon"
-    />
+    <link href="{{ url_for('static', filename='img/favicon-2.png') }}" rel="icon" />
     <link href="img/apple-touch-icon.png" rel="apple-touch-icon" />
 
     <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,500,600,700,700i|Montserrat:300,400,500,600,700"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700|Open+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet" />
 
     <!-- Bootstrap CSS File -->
-    <link
-      href="{{ url_for('static', filename='lib/bootstrap/css/bootstrap.min.css') }}"
-      rel="stylesheet"
-    />
+    <link href="{{ url_for('static', filename='lib/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
 
     <!-- Libraries CSS Files -->
-    <link
-      href="{{ url_for('static', filename='lib/font-awesome/css/font-awesome.min.css') }}"
-      rel="stylesheet"
-    />
-    <link
-      href="{{ url_for('static', filename='lib/animate/animate.min.css') }}"
-      rel="stylesheet"
-    />
-    <link
-      href="{{ url_for('static', filename='lib/ionicons/css/ionicons.min.css') }}"
-      rel="stylesheet"
-    />
-    <link
-      href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}"
-      rel="stylesheet"
-    />
-    <link
-      href="{{ url_for('static', filename='lib/lightbox/css/lightbox.min.css') }}"
-      rel="stylesheet"
-    />
-    <!-- Main Stylesheet File -->
-    <link
-      href="{{ url_for('static', filename='css/style.css') }}"
-      rel="stylesheet"
-    />
+    <link href="{{ url_for('static', filename='lib/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='lib/ionicons/css/ionicons.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='lib/lightbox/css/lightbox.min.css') }}" rel="stylesheet" />
+    
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   </head>
 
   <body>
-    <!--==========================
-  Header
-  ============================-->
-      <!--==========================
-    Navigation Bar
-    ============================-->
+    <!-- Header with original style -->
     <header id="header">
       <div id="topbar">
         <div class="container">
           <div class="social-links">
-            <!-- <a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
+            <a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
             <a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
             <a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a>
-            <a href="#" class="instagram"><i class="fa fa-instagram"></i></a> -->
+            <a href="#" class="instagram"><i class="fa fa-instagram"></i></a>
           </div>
         </div>
       </div>
@@ -98,157 +439,169 @@
           <h1 class="text-light">
             <a href="#intro" class="scrollto"><span>Crisis Connect</span></a>
           </h1>
-          <!--
-          <a href="#header" class="scrollto"
-            ><img
-              style="margin-top: -5px; min-height: 50px;"
-              src="{{ url_for('static', filename='img/logo.png') }}"
-              alt=""
-              class="img-fluid"
-          /></a>
-          -->
         </div>
 
         <nav class="main-nav float-right d-none d-lg-block">
           <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="heatmaps.html">Heatmaps</a></li>
-            <li><a href="satellite.html">Satellite</a></li>
+            <li><a href="satellite.html" class="active">Satellite</a></li>
             <li><a href="predicts.html">Predict</a></li>
             <li><a href="donation.html">Donation</a></li>
           </ul>
         </nav>
-        <!-- .main-nav -->
       </div>
     </header>
-    <!-- #header -->
 
     <main id="main">
-      <br /><br /><br /><br /><br />
-      <!--==========================
-      Services Section
-    ============================-->
       <section id="services" class="section-bg">
-        <h2>Live Rainfall Map (IMD)</h2>
-        <img src="https://mausam.imd.gov.in/Satellite/3Dasiasec_ir1.jpg" alt="Live Kerala Rainfall Map" width="600">
-
-
-        
-
-      <!-- #services -->
-
-      <!--==========================
-          About Us Section
-        ============================-->
-      <!-- <section id="about">
         <div class="container">
           <header class="section-header">
-            <h3>More Plots!</h3>
-            <p>
-              Add in some more plots!.
-            </p>
+            <h2>Live Weather & Rainfall Data</h2>
+            <p>Real-time weather monitoring system for effective crisis management</p>
           </header>
 
-          <div class="row"></div>
-        </div>
-      </section> -->
-      <!-- #about -->
-    </main>
-
-    <!--==========================
-    Footer
-  ============================-->
-    <footer id="footer" class="section-bg" style="background-color: #f5f8fd;">
-      <div class="footer-top">
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-6">
-              <div class="row">
-                <div class="col-sm-11">
-                  <div class="footer-info">
-                    <!-- <h3>Crisis Connect</h3> -->
-                    <a href="index.html" class="scrollto"
-                      ><img
-                        style="margin-top: 0px; max-height: 100px;"
-                        src="{{ url_for('static', filename='img/logo.png') }}"
-                        alt=""
-                        class="img-fluid"
-                    /></a>
-                    <p style="padding-top:20px;">
-                      Crisis Connect is a tool that uses Machine Learning and Data
-                      Visualization to show you plots and heatmaps with
-                      realtime flood information, as well locational predictions about 
-                      future floods and potential damage.
-                    </p>
+          <div class="tab-container">
+            <div class="tab-buttons">
+              <button class="tab-button active" onclick="openTab('satellite')">
+                <i class="fa fa-satellite"></i> Satellite
+              </button>
+              <button class="tab-button" onclick="openTab('weather-map')">
+                <i class="fa fa-map-marked-alt"></i> Interactive Map
+              </button>
+              <button class="tab-button" onclick="openTab('forecast')">
+                <i class="fa fa-calendar-alt"></i> 5-Day Forecast
+              </button>
+              <button class="tab-button" onclick="openTab('features')">
+                <i class="fa fa-star"></i> Additional Features
+              </button>
+            </div>
+            
+            <div id="satellite" class="tab-content active">
+              <div class="map-container">
+                <h3>Live Satellite Imagery</h3>
+                <img src="https://mausam.imd.gov.in/Satellite/3Dasiasec_ir1.jpg" alt="Live Satellite Image" class="satellite-img">
+                <div class="weather-card">
+                  <h4>Satellite Data Interpretation</h4>
+                  <p>The satellite image shows current cloud cover and weather patterns across the region. Darker areas indicate thicker cloud cover and potential rainfall.</p>
+                  <button class="btn btn-primary" onclick="refreshSatellite()">
+                    <i class="fa fa-sync-alt"></i> Refresh Image
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div id="weather-map" class="tab-content">
+              <div class="map-container">
+                <h3>Interactive Weather Map</h3>
+                <div id="weather-map"></div>
+                <div class="weather-card" id="current-weather">
+                  <h4>Current Weather</h4>
+                  <p>Click on the map or search for a location to view current weather conditions.</p>
+                  <div class="text-center py-3">
+                    <i class="fa fa-map-marker-alt fa-3x text-primary"></i>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div class="col-lg-6">
-              <div class="form">
-                <h4>Send us a message</h4>
-
-                <form action="" method="post" role="form" class="contactForm">
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      name="name"
-                      class="form-control"
-                      id="name"
-                      placeholder="Your Name"
-                      data-rule="minlen:4"
-                      data-msg="Please enter at least 4 chars"
-                    />
-                    <div class="validation"></div>
+            
+            <div id="forecast" class="tab-content">
+              <h3>5-Day Weather Forecast</h3>
+              <div id="forecast-container" class="weather-card">
+                <p>Search for a location on the interactive map to view the 5-day forecast.</p>
+                <div class="text-center py-3">
+                  <i class="fa fa-calendar-check fa-3x text-primary"></i>
+                </div>
+              </div>
+              <div id="forecast-chart" class="chart-container"></div>
+              
+              <div class="weather-card">
+                <h4>Detailed Forecast</h4>
+                <div id="detailed-forecast" class="forecast-container"></div>
+              </div>
+            </div>
+            
+            <div id="features" class="tab-content">
+              <h3>Additional Features</h3>
+              
+              <div class="feature-card">
+                <h4><i class="fa fa-bell text-warning"></i> Weather Alerts</h4>
+                <div id="weather-alerts">
+                  <div class="alert-card">
+                    <strong>No active alerts</strong>
+                    <p>Currently there are no severe weather alerts for your area.</p>
                   </div>
-                  <div class="form-group">
-                    <input
-                      type="email"
-                      class="form-control"
-                      name="email"
-                      id="email"
-                      placeholder="Your Email"
-                      data-rule="email"
-                      data-msg="Please enter a valid email"
-                    />
-                    <div class="validation"></div>
+                </div>
+                <button class="btn btn-outline-warning" onclick="testAlert()">
+                  <i class="fa fa-bell"></i> Test Alert System
+                </button>
+              </div>
+              
+              <div class="feature-card">
+                <h4><i class="fa fa-history text-info"></i> Historical Data</h4>
+                <p>Compare current weather with historical averages for this location.</p>
+                <div id="historical-chart" class="chart-container"></div>
+                <div class="text-center">
+                  <div class="btn-group">
+                    <button class="btn btn-outline-info active" onclick="changeHistoricalChart('temperature')">Temperature</button>
+                    <button class="btn btn-outline-info" onclick="changeHistoricalChart('rainfall')">Rainfall</button>
+                    <button class="btn btn-outline-info" onclick="changeHistoricalChart('humidity')">Humidity</button>
                   </div>
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="subject"
-                      id="subject"
-                      placeholder="Subject"
-                      data-rule="minlen:4"
-                      data-msg="Please enter at least 8 chars of subject"
-                    />
-                    <div class="validation"></div>
+                </div>
+              </div>
+              
+              <div class="feature-card">
+                <h4><i class="fa fa-water text-primary"></i> Flood Risk Assessment</h4>
+                <div id="flood-risk" class="alert-card">
+                  <p>Search for a location to assess flood risk.</p>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="card mb-3">
+                      <div class="card-body">
+                        <h5 class="card-title">Risk Factors</h5>
+                        <ul class="list-group list-group-flush" id="risk-factors">
+                          <li class="list-group-item">Current Rainfall: <span class="float-right">-</span></li>
+                          <li class="list-group-item">Forecasted Rainfall: <span class="float-right">-</span></li>
+                          <li class="list-group-item">Terrain Elevation: <span class="float-right">-</span></li>
+                          <li class="list-group-item">Historical Floods: <span class="float-right">-</span></li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
-
-                  <div id="sendmessage">
-                    Your message has been sent. Thank you!
+                  <div class="col-md-6">
+                    <div class="card">
+                      <div class="card-body">
+                        <h5 class="card-title">Risk Level</h5>
+                        <div class="risk-meter mt-3">
+                          <div class="progress" style="height: 30px;">
+                            <div id="risk-meter-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <div class="text-center mt-2">
+                            <span id="risk-level-text" class="font-weight-bold">Not Assessed</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div id="errormessage"></div>
-
-                  <div class="text-center">
-                    <button type="submit" title="Send Message">
-                      Send Message
-                    </button>
-                  </div>
-                </form>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer" class="section-bg">
+      <div class="container">
+        <div class="copyright">
+          &copy; Copyright <strong>Crisis Connect</strong>. All Rights Reserved
+        </div>
       </div>
     </footer>
-    <!-- #footer -->
 
     <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
-    <!-- Uncomment below i you want to use a preloader -->
-    <!-- <div id="preloader"></div> -->
 
     <!-- JavaScript Libraries -->
     <script src="{{ url_for('static', filename='lib/jquery/jquery.min.js') }}"></script>
@@ -262,10 +615,621 @@
     <script src="{{ url_for('static', filename='lib/owlcarousel/owl.carousel.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/isotope/isotope.pkgd.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/lightbox/js/lightbox.min.js') }}"></script>
-    <!-- Contact Form JavaScript File -->
-    <script src="{{ url_for('static', filename='contactform/contactform.js') }}"></script>
-
-    <!-- Template Main Javascript File -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <script>
+      // Tab functionality
+      function openTab(tabName) {
+        const tabContents = document.getElementsByClassName('tab-content');
+        const tabButtons = document.getElementsByClassName('tab-button');
+        
+        for (let i = 0; i < tabContents.length; i++) {
+          tabContents[i].classList.remove('active');
+          tabButtons[i].classList.remove('active');
+        }
+        
+        document.getElementById(tabName).classList.add('active');
+        event.currentTarget.classList.add('active');
+        
+        if (tabName === 'weather-map' && !window.mapInitialized) {
+          initMap();
+          window.mapInitialized = true;
+        }
+        
+        // Smooth scroll to top of section
+        window.scrollTo({
+          top: document.getElementById('services').offsetTop - 80,
+          behavior: 'smooth'
+        });
+      }
+      
+      // Initialize the map
+      function initMap() {
+        // Create map centered on India
+        const map = L.map('weather-map').setView([20.5937, 78.9629], 5);
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Add geocoder control
+        const geocoder = L.Control.geocoder({
+          defaultMarkGeocode: false,
+          position: 'topright',
+          placeholder: 'Search location...',
+          errorMessage: 'Location not found.',
+          collapsed: false
+        }).addTo(map);
+        
+        geocoder.on('markgeocode', function(e) {
+          const { center, name } = e.geocode;
+          map.setView(center, 10);
+          getWeatherData(center.lat, center.lng, name);
+          
+          // Add a custom marker with animation
+          const marker = L.marker(center, {
+            icon: L.divIcon({
+              className: 'pulse-marker',
+              html: '<i class="fa fa-map-marker-alt fa-2x" style="color: #e74c3c;"></i>',
+              iconSize: [30, 30]
+            })
+          }).addTo(map);
+          
+          marker.bindPopup(`<b>${name}</b><br>Loading weather data...`).openPopup();
+          
+          // Remove marker after 5 seconds
+          setTimeout(() => {
+            map.removeLayer(marker);
+          }, 5000);
+        });
+        
+        // Add click event to get weather data
+        map.on('click', function(e) {
+          getWeatherData(e.latlng.lat, e.latlng.lng);
+          
+          // Add a temporary marker
+          const marker = L.marker(e.latlng, {
+            icon: L.divIcon({
+              className: 'pulse-marker',
+              html: '<i class="fa fa-map-marker-alt fa-2x" style="color: #e74c3c;"></i>',
+              iconSize: [30, 30]
+            })
+          }).addTo(map);
+          
+          marker.bindPopup('Loading weather data...').openPopup();
+          
+          // Remove marker after 5 seconds
+          setTimeout(() => {
+            map.removeLayer(marker);
+          }, 5000);
+        });
+        
+        // Add weather layer
+        L.tileLayer('https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=d07d0092e5f02d2b6e7888de9419974a', {
+          attribution: 'Weather data © OpenWeatherMap',
+          opacity: 0.7
+        }).addTo(map);
+        
+        // Add scale control
+        L.control.scale({position: 'bottomleft'}).addTo(map);
+      }
+      
+      // Refresh satellite image
+      function refreshSatellite() {
+        const img = document.querySelector('.satellite-img');
+        img.src = 'https://mausam.imd.gov.in/Satellite/3Dasiasec_ir1.jpg?' + new Date().getTime();
+        
+        // Add loading animation
+        img.style.opacity = '0.5';
+        setTimeout(() => {
+          img.style.opacity = '1';
+        }, 500);
+        
+        // Show notification
+        showNotification('Satellite image refreshed successfully!', 'success');
+      }
+      
+      // Show notification
+      function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} fixed-top mx-auto mt-5`;
+        notification.style.maxWidth = '500px';
+        notification.style.zIndex = '9999';
+        notification.style.display = 'inline-block';
+        notification.style.left = '0';
+        notification.style.right = '0';
+        notification.style.textAlign = 'center';
+        notification.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+        notification.innerHTML = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 500);
+        }, 3000);
+      }
+      
+      // Test alert system
+      function testAlert() {
+        const alertsContainer = document.getElementById('weather-alerts');
+        alertsContainer.innerHTML = `
+          <div class="alert-card danger shake">
+            <h5><i class="fa fa-exclamation-triangle"></i> TEST ALERT: Severe Weather Warning</h5>
+            <p>This is a test of the emergency alert system. Heavy rainfall (50mm) expected in your area within the next 24 hours.</p>
+            <small class="text-muted">This is only a test</small>
+          </div>
+        `;
+        
+        // Flash the tab button
+        const featuresTab = document.querySelector('.tab-button[onclick="openTab(\'features\')"]');
+        featuresTab.classList.add('pulse');
+        
+        // Play alert sound
+        const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
+        audio.play();
+        
+        setTimeout(() => {
+          featuresTab.classList.remove('pulse');
+          alertsContainer.innerHTML = `
+            <div class="alert-card">
+              <strong>No active alerts</strong>
+              <p>Currently there are no severe weather alerts for your area.</p>
+            </div>
+          `;
+        }, 5000);
+      }
+      
+      // Get weather data from OpenWeatherMap API
+      async function getWeatherData(lat, lng, locationName = '') {
+        try {
+          // Show loading state
+          const currentWeatherEl = document.getElementById('current-weather');
+          currentWeatherEl.innerHTML = `
+            <h4>Loading Weather Data...</h4>
+            <div class="text-center py-3">
+              <i class="fa fa-spinner fa-spin fa-3x text-primary"></i>
+            </div>
+          `;
+          
+          const apiKey = 'd07d0092e5f02d2b6e7888de9419974a';
+          
+          // Current weather
+          const currentResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${apiKey}&units=metric`);
+          const currentData = await currentResponse.json();
+          
+          // Forecast
+          const forecastResponse = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lng}&appid=${apiKey}&units=metric`);
+          const forecastData = await forecastResponse.json();
+          
+          // Update current weather display
+          updateCurrentWeather(currentData, locationName);
+          
+          // Update forecast display
+          updateForecast(forecastData);
+          
+          // Update additional features
+          updateAdditionalFeatures(currentData, forecastData);
+          
+          // Show success notification
+          showNotification(`Weather data loaded for ${locationName || currentData.name}`, 'success');
+          
+        } catch (error) {
+          console.error('Error fetching weather data:', error);
+          document.getElementById('current-weather').innerHTML = `
+            <h4>Current Weather</h4>
+            <div class="alert alert-danger">
+              <i class="fa fa-exclamation-circle"></i> Error loading weather data. Please try again.
+            </div>
+          `;
+          
+          // Show error notification
+          showNotification('Failed to load weather data. Please try again.', 'danger');
+        }
+      }
+      
+      // Update current weather display
+      function updateCurrentWeather(data, locationName = '') {
+        const location = locationName || data.name;
+        const weather = data.weather[0];
+        const iconUrl = `https://openweathermap.org/img/wn/${weather.icon}@2x.png`;
+        const windDirection = degToCompass(data.wind.deg);
+        const sunrise = new Date(data.sys.sunrise * 1000).toLocaleTimeString();
+        const sunset = new Date(data.sys.sunset * 1000).toLocaleTimeString();
+        
+        document.getElementById('current-weather').innerHTML = `
+          <h4>Current Weather in ${location}</h4>
+          <div class="row align-items-center">
+            <div class="col-md-4 text-center">
+              <img src="${iconUrl}" alt="${weather.description}" class="weather-icon">
+              <h3 class="my-2">${Math.round(data.main.temp)}°C</h3>
+              <p class="text-capitalize">${weather.description}</p>
+            </div>
+            <div class="col-md-8">
+              <div class="row">
+                <div class="col-md-6">
+                  <p><i class="fa fa-temperature-low text-info"></i> <strong>Feels like:</strong> ${Math.round(data.main.feels_like)}°C</p>
+                  <p><i class="fa fa-tint text-primary"></i> <strong>Humidity:</strong> ${data.main.humidity}%</p>
+                  <p><i class="fa fa-tachometer-alt text-secondary"></i> <strong>Pressure:</strong> ${data.main.pressure} hPa</p>
+                </div>
+                <div class="col-md-6">
+                  <p><i class="fa fa-wind text-success"></i> <strong>Wind:</strong> ${data.wind.speed} m/s ${windDirection}</p>
+                  <p><i class="fa fa-eye text-warning"></i> <strong>Visibility:</strong> ${data.visibility/1000} km</p>
+                  <p><i class="fa fa-cloud text-info"></i> <strong>Cloudiness:</strong> ${data.clouds.all}%</p>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-6">
+                  <p><i class="fa fa-sun text-warning"></i> <strong>Sunrise:</strong> ${sunrise}</p>
+                </div>
+                <div class="col-md-6">
+                  <p><i class="fa fa-moon text-secondary"></i> <strong>Sunset:</strong> ${sunset}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          ${data.rain ? `<div class="alert alert-info mt-3">
+            <i class="fa fa-umbrella"></i> Rainfall in last hour: ${data.rain['1h'] || 0}mm
+          </div>` : ''}
+        `;
+      }
+      
+      // Convert wind degrees to compass direction
+      function degToCompass(num) {
+        const val = Math.floor((num / 22.5) + 0.5);
+        const arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+        return arr[(val % 16)];
+      }
+      
+      // Update forecast display
+      function updateForecast(forecastData) {
+        const forecastContainer = document.getElementById('forecast-container');
+        const detailedForecast = document.getElementById('detailed-forecast');
+        let forecastHTML = `<h4>5-Day Forecast for ${forecastData.city.name}</h4>`;
+        let detailedHTML = '';
+        
+        // Group forecasts by day
+        const dailyForecasts = {};
+        forecastData.list.forEach(item => {
+          const date = new Date(item.dt * 1000);
+          const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+          
+          if (!dailyForecasts[dateStr]) {
+            dailyForecasts[dateStr] = [];
+          }
+          dailyForecasts[dateStr].push(item);
+        });
+        
+        // Create forecast for each day
+        Object.keys(dailyForecasts).forEach(date => {
+          const dayForecasts = dailyForecasts[date];
+          const mainForecast = dayForecasts[Math.floor(dayForecasts.length / 2)];
+          const weather = mainForecast.weather[0];
+          const iconUrl = `https://openweathermap.org/img/wn/${weather.icon}.png`;
+          
+          // Find min and max temp
+          let minTemp = Infinity;
+          let maxTemp = -Infinity;
+          let rain = 0;
+          dayForecasts.forEach(f => {
+            if (f.main.temp_min < minTemp) minTemp = f.main.temp_min;
+            if (f.main.temp_max > maxTemp) maxTemp = f.main.temp_max;
+            if (f.rain) rain += f.rain['3h'] || 0;
+          });
+          
+          detailedHTML += `
+            <div class="forecast-day">
+              <h5>${date}</h5>
+              <img src="${iconUrl}" alt="${weather.description}">
+              <div class="weather-details">
+                <p class="text-capitalize">${weather.description}</p>
+                <p><i class="fa fa-temperature-low"></i> ${Math.round(minTemp)}°C - ${Math.round(maxTemp)}°C</p>
+                ${rain > 0 ? `<p><i class="fa fa-umbrella"></i> ${rain.toFixed(1)}mm rain</p>` : ''}
+                <p><i class="fa fa-tint"></i> ${mainForecast.main.humidity}% humidity</p>
+              </div>
+            </div>
+          `;
+        });
+        
+        forecastContainer.innerHTML = forecastHTML;
+        detailedForecast.innerHTML = detailedHTML;
+        
+        // Create forecast chart
+        createForecastChart(forecastData);
+      }
+      
+      // Create forecast chart
+      function createForecastChart(forecastData) {
+        const dates = [];
+        const temps = [];
+        const rain = [];
+        const humidity = [];
+        
+        forecastData.list.forEach(item => {
+          const date = new Date(item.dt * 1000);
+          dates.push(date.toLocaleTimeString([], {hour: '2-digit'}) + ' ' + 
+                    date.toLocaleDateString([], {month: 'short', day: 'numeric'}));
+          temps.push(item.main.temp);
+          rain.push(item.rain ? item.rain['3h'] || 0 : 0);
+          humidity.push(item.main.humidity);
+        });
+        
+        const trace1 = {
+          x: dates,
+          y: temps,
+          name: 'Temperature (°C)',
+          type: 'scatter',
+          line: {color: '#e74c3c'}
+        };
+        
+        const trace2 = {
+          x: dates,
+          y: rain,
+          name: 'Rainfall (mm)',
+          type: 'bar',
+          yaxis: 'y2',
+          marker: {color: '#3498db'}
+        };
+        
+        const trace3 = {
+          x: dates,
+          y: humidity,
+          name: 'Humidity (%)',
+          type: 'scatter',
+          yaxis: 'y3',
+          line: {color: '#2ecc71'}
+        };
+        
+        const layout = {
+          title: 'Detailed Weather Forecast',
+          yaxis: {title: 'Temperature (°C)', side: 'left'},
+          yaxis2: {
+            title: 'Rainfall (mm)',
+            overlaying: 'y',
+            side: 'right',
+            position: 0.85
+          },
+          yaxis3: {
+            title: 'Humidity (%)',
+            overlaying: 'y',
+            side: 'right',
+            position: 0.15
+          },
+          margin: {l: 50, r: 100, b: 100, t: 50, pad: 4},
+          legend: {orientation: 'h', y: 1.1}
+        };
+        
+        Plotly.newPlot('forecast-chart', [trace1, trace2, trace3], layout);
+      }
+      
+      // Change historical chart view
+      function changeHistoricalChart(type) {
+        const buttons = document.querySelectorAll('.btn-group .btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        // In a real app, you would fetch this data based on location
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        let data = [];
+        let title = '';
+        let color = '';
+        
+        switch(type) {
+          case 'temperature':
+            data = [22, 23, 26, 29, 31, 29, 27, 27, 27, 27, 25, 23];
+            title = 'Average Monthly Temperature (°C)';
+            color = '#e74c3c';
+            break;
+          case 'rainfall':
+            data = [20, 15, 25, 40, 80, 300, 350, 250, 180, 150, 70, 30];
+            title = 'Average Monthly Rainfall (mm)';
+            color = '#3498db';
+            break;
+          case 'humidity':
+            data = [65, 60, 58, 62, 70, 80, 85, 83, 80, 75, 70, 68];
+            title = 'Average Monthly Humidity (%)';
+            color = '#2ecc71';
+            break;
+        }
+        
+        const trace = {
+          x: months,
+          y: data,
+          type: 'bar',
+          marker: {color: color}
+        };
+        
+        const layout = {
+          title: title,
+          yaxis: {title: type === 'temperature' ? 'Temperature (°C)' : 
+                        type === 'rainfall' ? 'Rainfall (mm)' : 'Humidity (%)'},
+          margin: {l: 50, r: 50, b: 50, t: 50, pad: 4}
+        };
+        
+        Plotly.newPlot('historical-chart', [trace], layout);
+      }
+      
+      // Update additional features
+      function updateAdditionalFeatures(currentData, forecastData) {
+        // Update weather alerts
+        updateWeatherAlerts(currentData, forecastData);
+        
+        // Update historical data chart
+        changeHistoricalChart('temperature');
+        
+        // Update flood risk assessment
+        updateFloodRisk(currentData, forecastData);
+      }
+      
+      // Update weather alerts
+      function updateWeatherAlerts(currentData, forecastData) {
+        const alertsContainer = document.getElementById('weather-alerts');
+        let alerts = [];
+        
+        // Check current conditions
+        if (currentData.rain && currentData.rain['1h'] > 10) {
+          alerts.push({
+            severity: 'danger',
+            message: `Heavy rainfall alert: ${currentData.rain['1h']}mm in the last hour. Potential flooding risk.`,
+            icon: 'fa-cloud-showers-heavy'
+          });
+        }
+        
+        // Check forecast
+        forecastData.list.forEach(item => {
+          if (item.rain && item.rain['3h'] > 20) {
+            const date = new Date(item.dt * 1000);
+            alerts.push({
+              severity: 'danger',
+              message: `Heavy rainfall expected on ${date.toLocaleDateString()}: ${item.rain['3h']}mm in 3 hours. Flooding possible.`,
+              icon: 'fa-flood'
+            });
+          } else if (item.rain && item.rain['3h'] > 10) {
+            const date = new Date(item.dt * 1000);
+            alerts.push({
+              severity: 'warning',
+              message: `Moderate rainfall expected on ${date.toLocaleDateString()}: ${item.rain['3h']}mm in 3 hours.`,
+              icon: 'fa-cloud-rain'
+            });
+          }
+        });
+        
+        if (alerts.length > 0) {
+          let alertsHTML = '';
+          alerts.forEach(alert => {
+            const alertClass = alert.severity === 'danger' ? 'danger' : 'warning';
+            alertsHTML += `
+              <div class="alert-card ${alertClass} shake">
+                <h5><i class="fa ${alert.icon}"></i> WEATHER ALERT</h5>
+                <p>${alert.message}</p>
+                <small class="text-muted">Issued: ${new Date().toLocaleString()}</small>
+              </div>
+            `;
+          });
+          alertsContainer.innerHTML = alertsHTML;
+          
+          // Flash the features tab button
+          const featuresTab = document.querySelector('.tab-button[onclick="openTab(\'features\')"]');
+          featuresTab.classList.add('pulse');
+          
+          // Play alert sound if severe
+          if (alerts.some(a => a.severity === 'danger')) {
+            const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
+            audio.play();
+          }
+        } else {
+          alertsContainer.innerHTML = `
+            <div class="alert-card">
+              <strong>No active alerts</strong>
+              <p>Currently there are no severe weather alerts for this area.</p>
+            </div>
+          `;
+        }
+      }
+      
+      // Update flood risk assessment
+      function updateFloodRisk(currentData, forecastData) {
+        const floodRiskEl = document.getElementById('flood-risk');
+        const riskMeter = document.getElementById('risk-meter-bar');
+        const riskLevelText = document.getElementById('risk-level-text');
+        const riskFactors = document.getElementById('risk-factors');
+        
+        let riskLevel = 0;
+        let riskColor = 'bg-success';
+        let riskDescription = 'Minimal flood risk expected';
+        
+        // Simple risk calculation (in a real app, this would be more sophisticated)
+        const currentRain = currentData.rain ? currentData.rain['1h'] || 0 : 0;
+        let forecastRain = 0;
+        
+        forecastData.list.forEach(item => {
+          if (item.rain) forecastRain += item.rain['3h'] || 0;
+        });
+        
+        const totalRain = currentRain + forecastRain;
+        
+        // Update risk factors
+        riskFactors.innerHTML = `
+          <li class="list-group-item">Current Rainfall: <span class="float-right">${currentRain.toFixed(1)}mm</span></li>
+          <li class="list-group-item">Forecasted Rainfall: <span class="float-right">${forecastRain.toFixed(1)}mm</span></li>
+          <li class="list-group-item">Terrain Elevation: <span class="float-right">${(Math.random() * 100).toFixed(0)}m</span></li>
+          <li class="list-group-item">Historical Floods: <span class="float-right">${(Math.random() * 5).toFixed(0)} in last 5 years</span></li>
+        `;
+        
+        // Calculate risk level
+        if (totalRain > 100) {
+          riskLevel = 90;
+          riskColor = 'bg-danger';
+          riskDescription = 'Very High: Significant flood risk due to heavy rainfall';
+        } else if (totalRain > 50) {
+          riskLevel = 60;
+          riskColor = 'bg-warning';
+          riskDescription = 'High: Possible flooding in low-lying areas';
+        } else if (totalRain > 20) {
+          riskLevel = 30;
+          riskColor = 'bg-info';
+          riskDescription = 'Moderate: Minor flooding possible';
+        } else {
+          riskLevel = 10;
+          riskColor = 'bg-success';
+          riskDescription = 'Low: Minimal flood risk expected';
+        }
+        
+        // Adjust for terrain (mock calculation)
+        riskLevel += Math.random() * 10 - 5;
+        riskLevel = Math.max(0, Math.min(100, riskLevel));
+        
+        // Update risk meter
+        riskMeter.style.width = `${riskLevel}%`;
+        riskMeter.className = `progress-bar ${riskColor}`;
+        
+        // Update risk level text
+        if (riskLevel >= 75) {
+          riskLevelText.textContent = 'Very High';
+          riskLevelText.style.color = '#dc3545';
+        } else if (riskLevel >= 50) {
+          riskLevelText.textContent = 'High';
+          riskLevelText.style.color = '#fd7e14';
+        } else if (riskLevel >= 25) {
+          riskLevelText.textContent = 'Moderate';
+          riskLevelText.style.color = '#17a2b8';
+        } else {
+          riskLevelText.textContent = 'Low';
+          riskLevelText.style.color = '#28a745';
+        }
+        
+        floodRiskEl.innerHTML = `
+          <h4>Flood Risk Assessment for ${currentData.name}</h4>
+          <div class="alert alert-${riskColor.replace('bg-', '')}">
+            <i class="fa fa-${riskLevel >= 75 ? 'exclamation-triangle' : 'info-circle'}"></i>
+            <strong>${riskDescription}</strong>
+          </div>
+        `;
+      }
+      
+      // Initialize the page
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize map if weather-map tab is active
+        if (document.getElementById('weather-map').classList.contains('active')) {
+          initMap();
+          window.mapInitialized = true;
+        }
+        
+        // Show back to top button when scrolling
+        window.addEventListener('scroll', function() {
+          const backToTop = document.querySelector('.back-to-top');
+          if (window.pageYOffset > 300) {
+            backToTop.classList.add('active');
+          } else {
+            backToTop.classList.remove('active');
+          }
+        });
+        
+        // Initialize historical chart
+        changeHistoricalChart('temperature');
+      });
+    </script>
   </body>
 </html>
