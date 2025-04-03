@@ -11,6 +11,7 @@ from folium.plugins import HeatMap
 from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 from models import db, DonationRequest, Donation
+from tasks import scheduler
 import threading
 import time
 
@@ -20,6 +21,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database with the app
 db.init_app(app)
+
+# Start the background scheduler
+with app.app_context():
+    if not scheduler.running:
+        scheduler.start()
+
 
 # Load LSTM model for flood prediction
 model = load_model("flood_prediction_lstm.h5")
@@ -200,10 +207,7 @@ def satelliteimages():
 def predicts():
     return render_template('predicts.html', cities=cities, cityname="Information about the city")
 
-@app.route('/predicts.html', methods=["GET", "POST"])
-def get_predicts():
-    # List of 76 locations
-    cities = [{'name': 'Neyyattinkara', "sel": ""}, {'name': 'Nedumangad', "sel": ""}, {'name': 'Attingal', "sel": ""}, 
+cities = [{'name': 'Neyyattinkara', "sel": ""}, {'name': 'Nedumangad', "sel": ""}, {'name': 'Attingal', "sel": ""}, 
               {'name': 'Varkala', "sel": ""}, {'name': 'Punalur', "sel": ""}, {'name': 'Karunagappally', "sel": ""}, 
               {'name': 'Paravur', "sel": ""}, {'name': 'Kottarakkara', "sel": ""}, {'name': 'Thiruvalla', "sel": ""}, 
               {'name': 'Pathanamthitta', "sel": ""}, {'name': 'Adoor', "sel": ""}, {'name': 'Pandalam', "sel": ""}, 
@@ -230,19 +234,25 @@ def get_predicts():
               {'name': 'Koothattukulam', "sel": ""}, {'name': 'Irinjalakuda', "sel": ""}, {'name': 'Kunnamkulam', "sel": ""}, 
               {'name': 'Chalakudy', "sel": ""}]  # Replace with the full list of cities
 
-    temp = maxt = wspd = cloudcover = percip = humidity = pred = None  # Default values
+# Dictionary to store flood risk status
+location_risk = {}
+
+@app.route('/predicts.html', methods=["GET", "POST"])
+def get_predicts():
+    temp = maxt = wspd = cloudcover = percip = humidity = pred = None  
 
     if request.method == "POST":
         try:
             cityname = request.form["city"]
             print(f"Selected city: {cityname}")
-            for item in cities:
-                if item['name'] == cityname:
-                    item['sel'] = 'selected'
 
-            # Get latitude and longitude from geocoding API
+            # Mark selected city in dropdown
+            for item in cities:
+                item['sel'] = 'selected' if item['name'] == cityname else ""
+
+            # Get latitude and longitude
             URL = "https://geocode.search.hereapi.com/v1/geocode"
-            api_key = 'pPFSt0miNxLZJY6_Zs-h-nB9W1XxxJG6s3wat1L37r8'
+            api_key = 'pPFSt0miNxLZJY6_Zs-h-nB1W1XxxJG6s3wat1L37r8'
             PARAMS = {'apikey': api_key, 'q': cityname}
             response = requests.get(url=URL, params=PARAMS)
             data = response.json()
@@ -253,17 +263,21 @@ def get_predicts():
             weather_data = get_weather_data(lat, lon)
 
             if weather_data is not None:
-                # Extract features
-                temp = round(float(weather_data[0, 0, 3]), 2)  # Temperature
-                maxt = round(float(weather_data[0, 0, 3]) + 2, 2)  # Estimated Max Temperature
-                wspd = round(float(weather_data[0, 0, 10]), 2)  # Wind Speed
-                cloudcover = round(float(weather_data[0, 0, 13]), 2)  # Cloud Cover
-                percip = round(float(weather_data[0, 0, 6]), 2)  # Precipitation
-                humidity = round(float(weather_data[0, 0, 5]), 2)  # Humidity
+                # Extract weather features
+                temp = round(float(weather_data[0, 0, 3]), 2)
+                maxt = round(float(weather_data[0, 0, 3]) + 2, 2)
+                wspd = round(float(weather_data[0, 0, 10]), 2)
+                cloudcover = round(float(weather_data[0, 0, 13]), 2)
+                percip = round(float(weather_data[0, 0, 6]), 2)
+                humidity = round(float(weather_data[0, 0, 5]), 2)
 
-                # Flood Prediction
+                # Predict flood risk
                 flood_risk = predict_flood(weather_data)
-                pred = "Safe" if flood_risk == 1 else "Unsafe"
+                pred = "Unsafe" if flood_risk == 0 else "Safe"
+
+                # Update risk status in dictionary
+                location_risk[cityname] = pred
+                print(f"Updated risk status: {location_risk}")
 
             return render_template(
                 'predicts.html',
@@ -275,12 +289,15 @@ def get_predicts():
                 cloudcover=cloudcover,
                 percip=percip,
                 humidity=humidity,
-                pred=pred
+                pred=pred,
+                alerts=[loc for loc, risk in location_risk.items() if risk == "Unsafe"]  # Filter unsafe locations
             )
-        except:
-            return render_template('predicts.html', cities=cities, cityname="Oops, we weren't able to retrieve data for that city.")
+        except Exception as e:
+            print(f"Error: {e}")
+            return render_template('predicts.html', cities=cities, cityname="Oops! Unable to retrieve data.")
 
-    return render_template('predicts.html', cities=cities, cityname="Information about the city")
+    return render_template('predicts.html', cities=cities, cityname="Information about the city", alerts=[loc for loc, risk in location_risk.items() if risk == "Unsafe"])
+
 
 # Route to fetch all requests
 @app.route('/get_requests', methods=['GET'])
@@ -344,6 +361,7 @@ def donate():
     }
     return jsonify({"success": True, "request": updated_request})
 # Background task to delete fulfilled requests older than a minute
+
 def delete_old_fulfilled_requests():
     with app.app_context():
         while True:
