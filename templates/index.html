@@ -104,6 +104,24 @@
     <!--==========================
     Intro Section
   ============================-->
+  <div class="alert-container" style="margin-top: 100px;">
+    {% if unsafe_locations %}
+        <div class="alert alert-danger" role="alert">
+            <strong>{{ alert_message }}</strong><br>
+            The following locations are currently unsafe:
+            <ul>
+                {% for location in unsafe_locations %}
+                    <li>{{ location }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="alert alert-success" role="alert">
+            {{ alert_message }}
+        </div>
+    {% endif %}
+    
+  </div>
   <section id="intro" class="clearfix">
     <div class="container d-flex h-100">
       <div class="row justify-content-center align-self-center">
