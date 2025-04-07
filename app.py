@@ -3,10 +3,12 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 import pickle
 import base64
 import requests
+import datetime
 import json
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from apscheduler.schedulers.background import BackgroundScheduler
 from folium.plugins import HeatMap
 from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
@@ -17,7 +19,7 @@ import time
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donations.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+alert_data = {"alerts": []} 
 # Initialize the database with the app
 db.init_app(app)
 
@@ -107,34 +109,11 @@ def generate_heatmap():
 
 @app.route('/update_heatmap', methods=['POST'])
 def update_heatmap():
-    locations = [
-        (11.75, 75.5667), (11.987, 75.45), (12.5, 74.99),
-        (11.987, 75.376), (11.9833, 75.6833), (11.8333, 75.5667),
-        (12.05, 75.35), (11.93, 75.57), (12.093, 75.202),
-        (11.75, 75.5), (11.803, 76.014), (11.6667, 76.2667),
-        (11.6086, 76.0827), (11.525, 75.693), (11.441, 75.932),
-        (11.1793, 75.8414), (11.1796, 75.8414), (11.3046, 75.9841),
-        (11.0427, 75.9221), (11.4426, 75.695), (11.608, 75.5917),
-        (9.4519851, 76.5367065), (9.591564, 76.5221599), (9.2780698, 76.4424457),
-        (9.3285603, 76.6165824), (9.238487, 76.531479), (9.498067, 76.338844),
-        (9.668878, 76.339769), (9.183333, 76.5), (8.4065974, 77.0932133),
-        (8.695034, 76.817879), (8.603333, 77.002777), (9.0066825, 76.7779672),
-        (9.3816, 76.57489), (10.1475609, 76.2289395), (9.2034089, 76.7121783),
-        (9.26667, 76.78333), (9.2, 76.76), (8.7333, 76.7167),
-        (9.054736, 76.535358), (9.5053209, 76.7770683), (10.65, 76.0667),
-        (10.3428, 76.211), (10.3, 76.3317), (9.6874, 76.78),
-        (9.6686, 76.557), (10.048, 76.3083), (9.751, 77.116),
-        (9.8333, 76.5833), (10.196, 76.386), (9.939, 76.3183),
-        (9.9796, 76.5738), (10.1076, 76.3452), (10.1411, 76.2296),
-        (10.0615, 76.6297), (10.1115, 76.4797), (9.8667, 76.5),
-        (10.067, 76.292), (9.892, 76.7184), (10.028, 76.3264),
-        (9.7481, 76.3964)
-    ]
 
     
     heatmap_data = []
 
-    for lat, lon in locations:
+    for lat, lon in LOCATIONS:
         weather_data = get_weather_data(lat, lon)  # Fixed: Changed get_data to get_weather_data
         flood_risk = predict_flood(weather_data)  # Get flood prediction (0 or 1)
 
@@ -148,11 +127,8 @@ data = [{'name':'Delhi', "sel": "selected"}, {'name':'Mumbai', "sel": ""}, {'nam
 months = [{"name":"May", "sel": ""}, {"name":"June", "sel": ""}, {"name":"July", "sel": "selected"}]
 cities = [{'name':'Delhi', "sel": "selected"}, {'name':'Mumbai', "sel": ""}, {'name':'Kolkata', "sel": ""}, {'name':'Bangalore', "sel": ""}, {'name':'Chennai', "sel": ""}, {'name':'New York', "sel": ""}, {'name':'Los Angeles', "sel": ""}, {'name':'London', "sel": ""}, {'name':'Paris', "sel": ""}, {'name':'Sydney', "sel": ""}, {'name':'Beijing', "sel": ""}]
 
-@app.route("/")
-@app.route('/index.html')
-def index() -> str:
-    """Base page."""
-    return flask.render_template("index.html")
+
+
 
 @app.route('/plots.html')
 def plots():
@@ -358,7 +334,137 @@ def delete_old_fulfilled_requests():
 # Start the background thread
 threading.Thread(target=delete_old_fulfilled_requests, daemon=True).start()
 
+
+@app.route('/index.html')
+def index():
+    global unsafe_locations
+    if unsafe_locations:
+        alert_message = "⚠️ Unsafe locations detected!"
+    else:
+        alert_message = "✅ All locations are currently safe."
+    return render_template('index.html', alert_message=alert_message, unsafe_locations=unsafe_locations)
+
+def check_all_locations():
+    global unsafe_locations
+    print(f"[{datetime.now()}] Running safety check for all locations...")
+
+
+    city_coords = {
+    "Tirurangadi": (11.0427, 75.9221),
+    "Vatakara": (11.6080, 75.5917),
+    "Koyilandy": (11.4426, 75.6950),
+    "Mukkam": (11.3046, 75.9841),
+    "Ramanattukara": (11.1796, 75.8414),
+    "Feroke": (11.1793, 75.8414),
+    "Payyoli": (11.5250, 75.6930),
+    "Koduvally": (11.4410, 75.9320),
+    "Kalpetta": (11.6086, 76.0827),
+    "Mananthavadi": (11.8030, 76.0140),
+    "Sultan Bathery": (11.6667, 76.2667),
+    "Thalassery": (11.7500, 75.5000),
+    "Taliparamba": (12.0500, 75.3500),
+    "Payyanur": (12.0930, 75.2020),
+    "Mattannur": (11.9300, 75.5700),
+    "Koothuparamba": (11.8333, 75.5667),
+    "Anthoor": (11.9870, 75.3760),
+    "Iritty": (11.9833, 75.6833),
+    "Panoor": (11.7500, 75.5667),
+    "Sreekandapuram": (12.0500, 75.4500),
+    "Kasaragod": (12.5000, 74.9900),
+    "Kanhangad": (12.3100, 75.0800),
+    "Nileshwaram": (12.2648, 75.1257),
+    "Neyyattinkara": (8.3983, 77.0871),
+    "Nedumangad": (8.6021, 77.0023),
+    "Attingal": (8.6961, 76.8154),
+    "Varkala": (8.7384, 76.7169),
+    "Punalur": (9.0030, 76.9313),
+    "Karunagappally": (9.0176, 76.5210),
+    "Paravur": (8.7832, 76.7015),
+    "Kottarakkara": (9.0062, 76.7768),
+    "Thiruvalla": (9.3840, 76.5742),
+    "Pathanamthitta": (9.2640, 76.7879),
+    "Adoor": (9.1643, 76.7516),
+    "Pandalam": (9.3206, 76.7392),
+    "Alappuzha": (9.4981, 76.3388),
+    "Kayamkulam": (9.1813, 76.5002),
+    "Cherthala": (9.6841, 76.3391),
+    "Mavelikara": (9.2583, 76.5568),
+    "Chengannur": (9.3333, 76.6167),
+    "Haripad": (9.2889, 76.4733),
+    "Kottayam": (9.5916, 76.5222),
+    "Changanacherry": (9.4420, 76.5440),
+    "Pala": (9.7072, 76.6840),
+    "Pattambi": (10.7832, 76.1831),
+    "Shoranur": (10.7576, 76.2717),
+    "Kodungallur": (10.2320, 76.1951),
+    "Chittur": (10.6995, 76.7479),
+    "Cherpulassery": (10.8783, 76.3128),
+    "Chavakkad": (10.7000, 76.0500),
+    "Guruvayoor": (10.5941, 76.0410),
+    "Mannarkkad": (10.9910, 76.4600),
+    "Ottapalam": (10.7700, 76.3776),
+    "Wadakkanchery": (10.6500, 76.1167),
+    "Palakkad": (10.7867, 76.6548),
+    "Vaikom": (9.7481, 76.3964),
+    "Ettumanoor": (9.6686, 76.5570),
+    "Erattupetta": (9.6874, 76.7800),
+    "Thodupuzha": (9.8920, 76.7184),
+    "Kattappana": (9.7510, 77.1160),
+    "Thripunithura": (9.9457, 76.3419),
+    "Thrikkakara": (10.0280, 76.3264),
+    "Kalamassery": (10.0480, 76.3083),
+    "Perumbavoor": (10.1115, 76.4797),
+    "Aluva": (10.1076, 76.3452),
+    "Muvattupuzha": (9.9796, 76.5738),
+    "Kothamangalam": (10.0615, 76.6297),
+    "North Paravoor": (10.1411, 76.2296),
+    "Angamaly": (10.1960, 76.3860),
+    "Maradu": (9.9390, 76.3183),
+    "Eloor": (10.0670, 76.2920),
+    "Piravom": (9.8667, 76.5000),
+    "Koothattukulam": (9.8333, 76.5833),
+    "Irinjalakuda": (10.3428, 76.2110),
+    "Kunnamkulam": (10.6500, 76.0667),
+    "Chalakudy": (10.3000, 76.3317)
+    }
+
+    
+    new_unsafe = []
+
+    for city in city_coords.keys():
+        try:
+            lat, lon = city_coords[city]
+
+            # Get weather
+            weather_data = get_weather_data(lat, lon)
+            if weather_data is None:
+                print(f"No weather data for {city}")
+                continue
+
+            # Predict
+            flood_risk = predict_flood(weather_data)
+            print(f"Checked {city}: Flood risk = {flood_risk}")
+
+            if flood_risk == 1:
+                new_unsafe.append(city)
+        except Exception as e:
+            print(f"Error processing {city}: {e}")
+
+    unsafe_locations = new_unsafe
+    print(f"Unsafe locations updated: {unsafe_locations}")
+
+# Schedule the function to run every 4 hours
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=check_all_locations, trigger="interval", hours=4)
+scheduler.start()
+
+# Shutdown on exit
+import atexit
+atexit.register(lambda: scheduler.shutdown())
+
+
 if __name__ == "__main__":
+    check_all_locations()
     with app.app_context():
         db.create_all()
     app.run(debug=True)
